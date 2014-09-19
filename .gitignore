@@ -1,5 +1,7 @@
 .gradle
 build/
-
-# Ignore Gradle GUI config
-gradle-app.setting
+eclipse
+Minecraft-Resource-Calculator-2.iml
+Minecraft-Resource-Calculator-2.ipr
+Minecraft-Resource-Calculator-2.iws
+out/
