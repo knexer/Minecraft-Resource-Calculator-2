@@ -1,0 +1,287 @@
+
+html, body
+{
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+a
+{
+    cursor: pointer !important;
+    color: #A51C09;
+    outline: 0;
+}
+
+body
+{
+    background-color: #FCF9E6;
+    color: #A51C09;
+    font-family: 'Lora',Georgia,'Times New Roman',Times,serif;
+    font-size: 14px;
+    line-height: 1.42857;
+}
+
+h4
+{
+    font-size: 1.4em;
+    margin: 0 !important;
+}
+
+header, footer, .sub-wrapper
+{
+    display: table-row;
+    height: 1px;
+}
+
+header section
+{
+    background-color: white;
+    min-width: 500px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding-top: 10px;
+}
+
+header section > ul
+{
+    margin: 0 20px !important;
+}
+
+header section > ul:last-of-type
+{
+    margin-bottom: 10px !important;
+}
+
+header section > ul li.nav-list-item
+{
+    display: inline;
+}
+
+header section > ul li.nav-list-item .ui-spinner
+{
+    width: 30%;
+}
+
+header section > ul li.nav-list-item label
+{
+    width:30%;
+    border-bottom:1px solid #aaaaaa;
+}
+
+footer section
+{
+    background-color: white;
+    border-top: 1px solid black;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+footer section p
+{
+    margin: 0 !important;
+}
+
+label {
+    display: inline-block;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+body > section
+{
+    display: table;
+    height: 100%;
+    min-width: 650px;
+    width: 70%;
+    margin: 0 auto 0 auto;
+}
+
+#amount
+{
+    width: 75px;
+}
+
+#tabs
+{
+    margin: 9px auto 10px auto;
+    height: auto;
+    border-width: 0 !important;
+    background-color: #FCF9E6;
+    padding: 0 !important;
+}
+
+#tabs > ul
+{
+    background-color: #FCF9E6;
+    border: 0 !important;
+    border-bottom: 1px solid black !important;
+    border-radius: 0 !important;
+}
+
+#tabs > ul a
+{
+    color: #A51C09 !important;
+}
+
+#tabs > div
+{
+    border: 1px solid black;
+    border-top-width: 0;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+    background-color: white;
+}
+
+#details li, #summary li, #uses .use-list li
+{
+    border-top: 1px dotted #8C7B6A;
+    line-height: 20px;
+    list-style-type: none;
+    font-weight: bold;
+}
+
+#details > ul, #summary > ul, #use > ul
+{
+    padding-left: 20px !important;
+    margin-right: 0 !important;
+}
+
+#uses > .use-list-breadcrumb
+{
+    list-style-type: none;
+    width: 60%;
+    padding: 0;
+    margin: 0 auto;
+    display: table;
+}
+
+#uses .use-list-breadcrumb li
+{
+    display: table-cell;
+    font-weight: bold;
+}
+
+#uses .use-list-breadcrumb li a
+{
+    text-decoration: underline;
+}
+
+#uses .use-list-breadcrumb li:first-of-type,
+#uses .use-list-breadcrumb li:last-of-type
+{
+    width: 25%;
+}
+
+#uses .use-list-breadcrumb > li:nth-child(2)
+{
+    width: auto;
+    text-align: center;
+}
+
+#uses .use-list-breadcrumb > li:last-of-type
+{
+    text-align: right;
+}
+
+.right
+{
+    background: url(../images/right.png) no-repeat;
+}
+
+.down
+{
+    background: url(../images/down.png) no-repeat;
+}
+
+.right, .down
+{
+    display: inline-block;
+    width: 20px;
+}
+
+.change-recipe
+{
+    float: right;
+}
+
+.sub-recipes
+{
+    position: relative;
+    left: -20px;
+}
+
+/* This is all JQuery UI fudging */
+.ui-spinner
+{
+    background: -webkit-gradient(linear,50% 0,50% 100%,color-stop(20%,#fff),color-stop(50%,#f6f6f6),color-stop(52%,#eee),color-stop(100%,#f4f4f4));
+    background: -webkit-linear-gradient(top,#fff 20%,#f6f6f6 50%,#eee 52%,#f4f4f4 100%);
+    background: -moz-linear-gradient(top,#fff 20%,#f6f6f6 50%,#eee 52%,#f4f4f4 100%);
+    background: -o-linear-gradient(top,#fff 20%,#f6f6f6 50%,#eee 52%,#f4f4f4 100%);
+    background: linear-gradient(top,#fff 20%,#f6f6f6 50%,#eee 52%,#f4f4f4 100%);
+    font-size: 13px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.ui-tabs .ui-tabs-panel
+{
+    padding: 10px !important;
+}
+
+.ui-state-default
+{
+    background: white no-repeat !important;);
+}
+
+.ui-corner-top
+{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.ui-tabs .ui-tabs-nav
+{
+    padding: 0;
+}
+
+.ui-widget-content .ui-state-active,
+.ui-widget-content .ui-state-default
+{
+    border-color: black !important;
+}
+
+.ui-state-hover a:hover,
+.ui-state-focus a:link
+{
+    color: #A51C09 !important;
+}
+
+.ui-spinner-input
+{
+    color: black !important;
+}
+
+.ui-widget
+{
+    font-family: 'Lora',Georgia,'Times New Roman',Times,serif !important;
+}
+
+.ui-widget-content a {
+    color: #A51C09 !important;
+}
+
+.ui-widget-header
+{
+    background: #FCF9E6 !important;
+}
+
+.ui-widget-content {
+    color: #A51C09 !important;
+}

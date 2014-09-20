@@ -1,10 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Minecraft Resource Calculator 2</title>
+<head>
+    <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="js/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/mcrc.js"></script>
+    <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" href="css/chosen.css">
+    <link rel="stylesheet" href="css/mcrc.css">
+    <title>Minecraft Resource Calculator</title>
 </head>
 <body>
-    <h4>Hello</h4>
+<section>
+    <header>
+        <section>
+            <ul>
+                <li class="nav-list-item">
+                    <label for="mod-list">Mod:</label>
+                </li>
+                <li class="nav-list-item">
+                    <label for="item-list">Item:</label>
+                </li>
+                <li class="nav-list-item">
+                    <label for="amount">Amount:</label>
+                </li>
+            </ul>
+            <ul>
+                <li class="nav-list-item">
+                    <select id="mod-list"></select>
+                </li>
+                <li class="nav-list-item">
+                    <select id="item-list"></select>
+                </li>
+                <li class="nav-list-item">
+                    <input id="amount" min="1" value="1">
+                </li>
+            </ul>
+        </section>
+    </header>
+    <div id="tabs">
+        <ul>
+            <li><a href="#details">Crafting Tree</a></li>
+            <li><a href="#uses">Item Uses</a></li>
+            <li><a href="#summary">Summary</a></li>
+        </ul>
+        <div id="details"></div>
+        <div id="uses"></div>
+        <div id="summary"></div>
+    </div>
+    <footer>
+        <section>
+            <p>No guarantee is given or implied as to the accuracy of the information shown above.</p>
+            <a href="https://bitbucket.org/UntouchedWagons/minecraft-resource-calculator/">Repository</a> |
+            <a href="irc://esper.net/mcrc">IRC</a> |
+            <a href="https://docs.google.com/spreadsheets/d/1uZFSu8Gi9tGVkH9CxXheFXiewf5fkAUPmAFPYkE3N8M/">Progress</a>
+            <p>Copyright UntouchedWagons et al 2014.</p>
+        </section>
+    </footer>
+</section>
 </body>
 </html>
