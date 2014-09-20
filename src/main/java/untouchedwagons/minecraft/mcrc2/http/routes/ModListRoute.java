@@ -36,7 +36,7 @@ public class ModListRoute implements RouteHandler {
 
         FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
 
-        res.headers().set(CONTENT_TYPE, String.format("text/html; charset=UTF-8"));
+        res.headers().set(CONTENT_TYPE, String.format("application/json; charset=UTF-8"));
         HttpHeaders.setContentLength(res, content.readableBytes());
 
         return res;
