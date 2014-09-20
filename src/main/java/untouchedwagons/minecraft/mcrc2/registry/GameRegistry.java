@@ -94,6 +94,10 @@ public class GameRegistry {
             unlocalized_name = this.registry.getUnlocalizedName(is);
             localized_name = this.registry.getLocalizedName(is);
 
+            // A tile.null shows up somehow, don't know why
+            if (unlocalized_name.equals("tile.null"))
+                continue;
+
             mod.getItems()
                     .put(unlocalized_name,
                             new Item(unlocalized_name, localized_name));

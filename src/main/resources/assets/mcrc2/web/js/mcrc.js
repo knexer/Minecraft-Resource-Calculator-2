@@ -1,6 +1,6 @@
 
-var cached_item_lists = {};
-var machine_list = {};
+var mod_data = {};
+var mod_list = {};
 
 var current_crafting_tree;
 
@@ -12,22 +12,6 @@ function get_item_namespace(item)
         namespace = "mc";
 
     return namespace;
-}
-
-function get_machine_list ()
-{
-    $.ajax({
-        url: "machine-list",
-        type: "GET",
-        dataType : "json",
-        async: false,
-        success: function(machine_list_obj) {
-            machine_list = machine_list_obj;
-        },
-        error: function() {
-            alert("Could not load machine list. Sorry.");
-        }
-    });
 }
 
 function get_mod_list ()
@@ -42,8 +26,10 @@ function get_mod_list ()
         success: function(obj) {
             mod_list = obj;
         },
-        error: function() {
-            alert("Could not load mod list. Sorry.");
+        statusCode: {
+            503: function() {
+                alert("HTTP 503 - This is probably because the Resource Calculator isn't ready.")
+            }
         }
     });
 
@@ -52,8 +38,8 @@ function get_mod_list ()
 
 function get_item_list (mod_to_load)
 {
-    if (cached_item_lists[mod_to_load])
-        return cached_item_lists[mod_to_load];
+    if (mod_data[mod_to_load]["items"])
+        return mod_data[mod_to_load]["items"];
 
     $.ajax({
         url: "item-list/" + mod_to_load,
@@ -61,34 +47,28 @@ function get_item_list (mod_to_load)
         dataType : "json",
         async: false,
         success: function(obj) {
-            cached_item_lists[mod_to_load] = obj;
+            mod_data[mod_to_load]["items"] = obj;
         },
-        error: function() {
-            alert("Could not load item list. Sorry.");
+        statusCode: {
+            503: function() {
+                alert("HTTP 503 - This is probably because the Resource Calculator isn't ready.")
+            }
         }
     });
 
-    return cached_item_lists[mod_to_load];
+    return mod_data[mod_to_load]["items"];
 }
 
-function get_item_use_list (item)
+function initialize_mod_data(data)
 {
-    var item_use_list = [];
+    mod_list = data;
 
-    $.ajax({
-        url: "uses/" + item,
-        type: "GET",
-        dataType : "json",
-        async: false,
-        success: function (obj) {
-            item_use_list = obj;
-        },
-        error: function() {
-            alert("Could not load item use list. Sorry.");
-        }
+    $.each (data, function (mod_id, mod_name)
+    {
+        mod_data[mod_id] = {
+            name: mod_name
+        };
     });
-
-    return item_use_list;
 }
 
 function process_craft ()
@@ -97,9 +77,9 @@ function process_craft ()
     var amount = $("#amount").val();
     var number_regex = /^\d+$/;
 
-    var item_ns  = get_item_namespace(item);
+    var item_ns = get_item_namespace(item);
 
-    if (cached_item_lists[item_ns][item] == null) return;
+    if (mod_data[item_ns]["items"][item] == null) return;
     if (number_regex.test(amount) == false) return;
 
     $.ajax({
@@ -160,18 +140,16 @@ function prepare_base_item_list (crafting_tree, list)
 
 function display_mod_list ()
 {
-    var mod_list = get_mod_list();
-
     var sorted_mod_list = [];
 
     $.each (mod_list, function (mod_ns){
-        if (mod_ns == "mc") return;
+        if (mod_ns == "minecraft") return;
 
         sorted_mod_list.push(mod_ns);
     });
 
     sorted_mod_list.sort();
-    sorted_mod_list.unshift("mc");
+    sorted_mod_list.unshift("minecraft");
 
     var mods_list_select = $("#mod-list");
     var mods_list_inputs = [];
@@ -185,21 +163,26 @@ function display_mod_list ()
 
 function display_item_list (mod_to_load)
 {
-    var mod_item_list = get_item_list (mod_to_load);
+    var mod_item_list = get_item_list(mod_to_load);
 
     var item_list_select = $("<select>", { id: "item-list" });
     var items_list = [];
 
-    $.each(mod_item_list, function (item) {
-        items_list.push(item);
+    $.each(mod_item_list, function (item, data) {
+        items_list.push(data);
     });
-    items_list.sort();
+
+    items_list.sort(function (a, b) {
+        if (a["name"] < b["name"])
+            return -1;
+        if (a["name"] > b["name"])
+            return 1;
+        return 0;
+    });
 
     var item_list_inputs = [];
-    $.each(items_list, function (pos, item) {
-        var item_name = mod_item_list[item];
-
-        item_list_inputs.push($("<option>", { value: item }).append(item_name));
+    $.each(items_list, function (pos, item_data) {
+        item_list_inputs.push($("<option>", { value: item_data["id"] }).append(item_data["name"]));
     });
 
     var parent_container = $("#item-list").parent("").empty();
@@ -207,8 +190,7 @@ function display_item_list (mod_to_load)
     parent_container.append(item_list_select);
 
     item_list_select.chosen({width: "30%"}).on('change', function(){
-        process_craft();
-        display_item_usages();
+        //process_craft();
     }).change();
 }
 
@@ -257,9 +239,7 @@ function display_crafting_tree (crafting_tree, container)
         if (crafting_tree['recipe']['machine'])
         {
             var machine_int_name = crafting_tree['recipe']['machine'];
-            var machine_ext_name = machine_list[machine_int_name];
-
-            var s = "This recipe requires the use of a " + machine_ext_name;
+            var s = "This recipe requires the use of a " + machine_int_name;
 
             temp.append("&nbsp;");
             temp.append($("<img>", { "src": "images/info.png", "title": s }));
@@ -320,7 +300,7 @@ function display_summary (base_items_needed)
     {
         var item_ns = get_item_namespace(ingredient);
 
-        var item_text = cached_item_lists[item_ns][ingredient];
+        var item_text = mod_data[item_ns]["items"][ingredient];
         item_text += " X ";
         item_text += ingredient_count;
 
@@ -328,79 +308,27 @@ function display_summary (base_items_needed)
     });
 }
 
-function display_item_usages ()
-{
-    var item = $("#item-list").val();
-    var item_use_list = get_item_use_list(item);
-
-    var f = function (item_use_list, pos)
-    {
-        var ingredients = $("<ul>");
-        var uses_elem = $("#uses").empty();
-
-        var result_item = item_use_list[pos];
-
-        $.each (result_item["recipe"]["ingredients"], function (ingredient, ingredient_count) {
-            var ingredient_ns = get_item_namespace(ingredient);
-
-            if (cached_item_lists[ingredient_ns] == null)
-                get_item_list(ingredient_ns);
-
-            var ingredient_text = cached_item_lists[ingredient_ns][ingredient];
-            ingredient_text += " X ";
-            ingredient_text += ingredient_count;
-
-            ingredients.append ($("<li>", { class: "sub-recipes" }).append(ingredient_text));
-        });
-
-        var result_ns = get_item_namespace(result_item["name"]);
-
-        if (cached_item_lists[result_ns] == null)
-            get_item_list(result_ns);
-
-        var result_name = cached_item_lists[result_ns][result_item["name"]];
-        var breadcrumb_result_name = result_name;
-        result_name += " X ";
-        result_name += result_item["recipe"]["produces"];
-
-        var result = $("<li>", { class: "sub-recipes" }).append(result_name).append(ingredients);
-        var recipe = $("<ul>", { class: "use-list" }).append(result);
-
-        uses_elem.append(recipe);
-
-        if (item_use_list.length > 1) {
-            var prev_pos = (pos == 0) ? item_use_list.length - 1 : pos - 1;
-            var next_pos = (pos == item_use_list.length - 1) ? 0 : pos + 1;
-
-            var prev_li = $("<li>").append($("<a>").append("<<-- Previous").click(function (){
-                f (item_use_list, prev_pos);
-            }));
-            var item_li = $("<li>").append(breadcrumb_result_name);
-            var next_li = $("<li>").append($("<a>").append("Next -->>").click (function (){
-                f (item_use_list, next_pos);
-            }));
-
-            var usages_breadcrumb = $("<ul>", { class: "use-list-breadcrumb" })
-                                    .append(prev_li)
-                                    .append(item_li)
-                                    .append(next_li);
-
-            uses_elem.append(usages_breadcrumb);
-        }
-    };
-
-    if (item_use_list.length)
-        f (item_use_list, 0);
-    else
-        $("#uses").empty().append($("<p>").append("It seems this item is not used in anything."));
-}
-
 $(document).ready(function() {
     $("#tabs").tabs();
 
     $.cookie.json = true;
 
-    get_machine_list();
+    var mod_list = get_mod_list();
+
+    initialize_mod_data(mod_list);
+
+    var item_list = get_item_list("minecraft");
+
+    mod_data["minecraft"]["items"] = {};
+
+    $.each (item_list, function (unlocalized_name, localized_name)
+    {
+        mod_data["minecraft"]["items"][unlocalized_name] = {
+            id: unlocalized_name,
+            name: localized_name
+        };
+    });
+
     display_mod_list();
 
     $("#mod-list").chosen({
@@ -410,7 +338,7 @@ $(document).ready(function() {
     }).change();
 
     $("#amount").spinner({
-        stop: process_craft
+        //stop: process_craft
     });
 
     $("a.ui-spinner-button").removeClass("ui-state-default");

@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpResponseStatus.SERVICE_UNAVAILABLE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class ModItemListRoute implements RouteHandler {
@@ -30,6 +31,9 @@ public class ModItemListRoute implements RouteHandler {
 
     @Override
     public FullHttpResponse route(ChannelHandlerContext ctx, HttpMethod method, String uri, FullHttpRequest request) {
+        if (!this.game_registry.isReady())
+            return new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE);
+
         Matcher matcher = mod_regex.matcher(uri);
         matcher.find();
 
