@@ -12,6 +12,7 @@ import untouchedwagons.minecraft.mcrc2.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
+import untouchedwagons.minecraft.mcrc2.api.recipes.filters.RecipeFilter;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -22,6 +23,7 @@ public class GameRegistry {
     private final RecipeWrapperFactoryRepository wrapper_factory_repo;
     private final Map<String, MinecraftMod> mods;
     private final List<IModSupportService> support_services;
+    private final Map<Class, List<RecipeFilter>> recipe_filters;
 
     public static final Pattern ModIDRegex = Pattern.compile("^(\\w+)");
 
@@ -31,6 +33,8 @@ public class GameRegistry {
         this.registry = new CustomLocalizationRegistry();
         this.wrapper_factory_repo = new RecipeWrapperFactoryRepository(this.registry);
         this.support_services = new ArrayList<IModSupportService>();
+        this.recipe_filters = new HashMap<Class, List<RecipeFilter>>();
+
         this.ready = false;
 
         this.mods = new HashMap<String, MinecraftMod>();
@@ -115,8 +119,29 @@ public class GameRegistry {
         }
     }
 
+    public void collectRecipeFilters()
+    {
+        List<RecipeFilter> filter_list;
+
+        for (RecipeFilter filter : ServiceLoader.load(RecipeFilter.class))
+        {
+            filter.setLocalizationRegistry(this.registry);
+
+            for (Class recipe_class : filter.getRecipeWrapperClasses())
+            {
+                if (this.recipe_filters.containsKey(recipe_class))
+                    filter_list = this.recipe_filters.get(recipe_class);
+                else
+                    this.recipe_filters.put(recipe_class, filter_list = new ArrayList<RecipeFilter>());
+
+                filter_list.add(filter);
+            }
+        }
+    }
+
     public void collectRecipes()
     {
+        boolean filter_recipe;
         ItemStack result;
         Matcher matcher;
         String result_mod_id;
@@ -125,6 +150,8 @@ public class GameRegistry {
         for (IModSupportService support_service : this.support_services)
         {
             for(RecipeWrapper wrapped_recipe : support_service) {
+                filter_recipe = false;
+
                 if (wrapped_recipe == null)
                     continue;
 
@@ -137,6 +164,18 @@ public class GameRegistry {
                     System.out.println("Caught an ArrayIndexOutOfBoundsException when parsing a recipe. Thermal Expansion is known to cause these when processing its rockwool recipes.");
                     continue;
                 }
+
+                if (this.recipe_filters.containsKey(wrapped_recipe.getClass()))
+                {
+                    for (RecipeFilter filter : this.recipe_filters.get(wrapped_recipe.getClass()))
+                    {
+                        if (filter.shouldFilterRecipe(wrapped_recipe))
+                            filter_recipe = true;
+                    }
+                }
+
+                if (filter_recipe)
+                    continue;
 
                 result = wrapped_recipe.getResult();
 
