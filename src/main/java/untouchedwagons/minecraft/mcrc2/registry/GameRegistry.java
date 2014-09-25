@@ -125,6 +125,9 @@ public class GameRegistry {
 
         for (RecipeFilter filter : ServiceLoader.load(RecipeFilter.class))
         {
+            if (!filter.shouldActivateFilter())
+                continue;
+
             filter.setLocalizationRegistry(this.registry);
 
             for (Class recipe_class : filter.getRecipeWrapperClasses())

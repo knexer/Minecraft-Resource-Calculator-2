@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public abstract class RecipeWrapper
 {
-    private Map<String, Integer> by_products;
+    private Map<ItemStack, Integer> by_products;
     private Map<Object, Integer> ingredients;
     private Object recipe;
     private ILocalizationRegistry registry;
@@ -27,11 +27,11 @@ public abstract class RecipeWrapper
         this.recipe = recipe;
         this.registry = registry;
 
-        this.by_products = new HashMap<String, Integer>();
+        this.by_products = new HashMap<ItemStack, Integer>();
         this.ingredients = new HashMap<Object, Integer>();
     }
 
-    public Map<String, Integer> getByProducts() {
+    public Map<ItemStack, Integer> getByProducts() {
         return by_products;
     }
 
@@ -80,29 +80,39 @@ public abstract class RecipeWrapper
      */
     protected void addIngredient(ItemStack is)
     {
-        String unlocalized_name = this.registry.getUnlocalizedName(is);
-
         if (is.getItem().hasContainerItem(is))
         {
             ItemStack by_product = is.getItem().getContainerItem(is);
-            String by_product_name = this.registry.getUnlocalizedName(by_product);
 
-            if (!this.by_products.containsKey(by_product_name))
-                this.by_products.put(by_product_name, by_product.stackSize);
+            if (!this.by_products.containsKey(by_product))
+                this.by_products.put(by_product, by_product.stackSize);
             else
                 this.by_products.put(
-                    by_product_name,
-                    this.by_products.get(by_product_name) + by_product.stackSize
+                    by_product,
+                    this.by_products.get(by_product) + by_product.stackSize
                 );
         }
 
-        if (!this.getIngredients().containsKey(unlocalized_name))
-            this.getIngredients().put(unlocalized_name, is.stackSize);
-        else
-            this.getIngredients().put(
-                unlocalized_name,
-                this.getIngredients().get(unlocalized_name) + is.stackSize
-            );
+        ItemStack is2;
+
+        for (Object o : this.getIngredients().keySet())
+        {
+            if (o instanceof List) continue;
+
+            is2 = (ItemStack) o;
+
+            if (is2.isItemEqual(is))
+            {
+                this.getIngredients().put(
+                    is2,
+                    this.getIngredients().get(is2) + is.stackSize
+                );
+
+                return;
+            }
+        }
+
+        this.getIngredients().put(is, is.stackSize);
     }
 
     /**
