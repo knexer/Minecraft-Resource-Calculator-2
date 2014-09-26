@@ -2,6 +2,7 @@ package untouchedwagons.minecraft.mcrc2.api.recipes;
 
 import net.minecraft.item.ItemStack;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +54,15 @@ public abstract class RecipeWrapper
         return this.recipe;
     }
 
+    public ILocalizationRegistry getRegistry() {
+        return registry;
+    }
+
     /**
      * Get the result of the crafting step
      * @return net.minecraft.item.ItemStack
      */
-    public abstract ItemStack getResult();
+    public abstract StackWrapper getResult();
 
     /**
      * Template method that concrete classes can override,

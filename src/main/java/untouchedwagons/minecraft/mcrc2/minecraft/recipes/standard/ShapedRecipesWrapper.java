@@ -6,7 +6,8 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
-
+import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 public class ShapedRecipesWrapper extends RecipeWrapper
 {
@@ -18,8 +19,8 @@ public class ShapedRecipesWrapper extends RecipeWrapper
     }
 
     @Override
-    public ItemStack getResult() {
-        return ((ShapedRecipes)this.getRecipe()).getRecipeOutput();
+    public StackWrapper getResult() {
+        return new ItemStackWrapper(((ShapedRecipes)this.getRecipe()).getRecipeOutput(), this.getRegistry());
     }
 
     @Override

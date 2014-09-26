@@ -57,6 +57,7 @@ public class ClientProxy extends CommonProxy
             this.registry.collectRecipeProviders();
             this.registry.collectRecipeFilters();
             this.registry.collectModItems();
+            this.registry.collectFluids();
             this.registry.collectRecipes();
 
             this.registry.markAsReady(true);

@@ -6,6 +6,8 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
+import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 import java.util.List;
 
@@ -19,8 +21,8 @@ public class ShapelessOreRecipeWrapper extends RecipeWrapper {
     }
 
     @Override
-    public ItemStack getResult() {
-        return ((ShapelessOreRecipe)this.getRecipe()).getRecipeOutput();
+    public StackWrapper getResult() {
+        return new ItemStackWrapper(((ShapelessOreRecipe)this.getRecipe()).getRecipeOutput(), this.getRegistry());
     }
 
     @Override

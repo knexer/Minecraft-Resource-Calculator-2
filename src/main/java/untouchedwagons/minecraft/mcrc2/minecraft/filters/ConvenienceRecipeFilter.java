@@ -4,6 +4,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.filters.RecipeFilter;
+import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapedRecipesWrapper;
 
 import java.util.List;
@@ -32,6 +34,9 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
         if (this.isNuggetToIngotRecipe(recipe))
             return true;
 
+        if (this.isSelfReplicatingRecipe(recipe))
+            return true;
+
         return false;
     }
 
@@ -45,7 +50,12 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
         if (ingredient instanceof List) return false;
 
         ItemStack ingredient_stack = (ItemStack) ingredient;
-        ItemStack result_stack = recipe.getResult();
+        StackWrapper result_wrapper = recipe.getResult();
+
+        if (!(result_wrapper instanceof ItemStackWrapper))
+            return false;
+
+        ItemStack result_stack = (ItemStack)result_wrapper.getUnderlyingStack();
 
         return (ingredient_stack.getItem() instanceof ItemBlock && ingredient_stack.stackSize == 1 &&
                 !(result_stack.getItem() instanceof ItemBlock) && result_stack.stackSize == 9);
@@ -61,12 +71,22 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
         if (ingredient instanceof List) return false;
 
         ItemStack ingredient_stack = (ItemStack) ingredient;
-        ItemStack result_stack = recipe.getResult();
+        StackWrapper result_wrapper = recipe.getResult();
+
+        if (!(result_wrapper instanceof ItemStackWrapper))
+            return false;
+
+        ItemStack result_stack = (ItemStack)result_wrapper.getUnderlyingStack();
 
         boolean nugget_ingredient = nugget_pattern.matcher(ingredient_stack.getUnlocalizedName()).find();
         boolean ingot_result = ingot_pattern.matcher(result_stack.getUnlocalizedName()).find();
 
         return (nugget_ingredient && ingredient_stack.stackSize == 9 &&
                 ingot_result && result_stack.stackSize == 1);
+    }
+
+    public boolean isSelfReplicatingRecipe(RecipeWrapper recipe)
+    {
+        return false;
     }
 }

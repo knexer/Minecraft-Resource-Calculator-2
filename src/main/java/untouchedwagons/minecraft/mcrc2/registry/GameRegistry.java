@@ -5,6 +5,9 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import untouchedwagons.minecraft.mcrc2.CustomLocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.PotionHelper;
 import untouchedwagons.minecraft.mcrc2.RecipeWrapperFactoryRepository;
@@ -13,6 +16,7 @@ import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.filters.RecipeFilter;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -108,6 +112,28 @@ public class GameRegistry {
         }
     }
 
+    public void collectFluids()
+    {
+        Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
+        MinecraftMod forge_mod = this.mods.get("Forge");
+        Fluid fluid;
+
+        for (Map.Entry<String, Fluid> fluid_entry : fluids.entrySet())
+        {
+            fluid = fluid_entry.getValue();
+
+            forge_mod.getItems().put(
+                    fluid_entry.getKey(),
+                    new Item(
+                            fluid.getUnlocalizedName(),
+                            fluid.getLocalizedName(
+                                    new FluidStack(fluid, 0)
+                            )
+                    )
+            );
+        }
+    }
+
     public void collectRecipeProviders()
     {
         for (IModSupportService service : ServiceLoader.load(IModSupportService.class))
@@ -145,7 +171,7 @@ public class GameRegistry {
     public void collectRecipes()
     {
         boolean filter_recipe;
-        ItemStack result;
+        StackWrapper result;
         Matcher matcher;
         String result_mod_id;
         String unlocalized_name;
@@ -182,8 +208,8 @@ public class GameRegistry {
 
                 result = wrapped_recipe.getResult();
 
-                result_mod_id = Utilities.getModId(result.getItem());
-                unlocalized_name = this.registry.getUnlocalizedName(result);
+                result_mod_id = result.getOwningMod();
+                unlocalized_name = result.getUnlocalizedName();
 
                 matcher = ModIDRegex.matcher(result_mod_id);
 
@@ -192,11 +218,17 @@ public class GameRegistry {
 
                 result_mod_id = matcher.group(1);
 
-                this.mods.get(result_mod_id)
-                        .getItems()
-                        .get(unlocalized_name)
-                        .getRecipes()
-                        .add(wrapped_recipe);
+                try {
+                    this.mods.get(result_mod_id)
+                            .getItems()
+                            .get(unlocalized_name)
+                            .getRecipes()
+                            .add(wrapped_recipe);
+                }
+                catch (NullPointerException npe)
+                {
+                    System.out.format("Mod ID: %s, Item's unlocalized_name: %s\n", result_mod_id, unlocalized_name);
+                }
             }
         }
     }

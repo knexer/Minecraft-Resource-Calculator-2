@@ -5,10 +5,9 @@ import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
+import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
-/**
- * Created by Jordan on 8/5/2014.
- */
 public class FurnaceRecipeWrapper extends RecipeWrapper {
     public FurnaceRecipeWrapper(IRecipe recipe, ILocalizationRegistry registry) throws InvalidRecipeException {
         super(recipe, registry);
@@ -27,8 +26,8 @@ public class FurnaceRecipeWrapper extends RecipeWrapper {
     }
 
     @Override
-    public ItemStack getResult() {
-        return ((FurnaceRecipe)this.getRecipe()).getRecipeOutput();
+    public StackWrapper getResult() {
+        return new ItemStackWrapper(((FurnaceRecipe)this.getRecipe()).getRecipeOutput(), this.getRegistry());
     }
 
     public String getMachine()

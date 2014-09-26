@@ -4,6 +4,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
+import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
+import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 public class EnchantingRecipeWrapper extends RecipeWrapper {
     /**
@@ -25,8 +27,8 @@ public class EnchantingRecipeWrapper extends RecipeWrapper {
     }
 
     @Override
-    public ItemStack getResult() {
-        return ((EnchantingRecipe)this.getRecipe()).getRecipeOutput();
+    public StackWrapper getResult() {
+        return new ItemStackWrapper(((EnchantingRecipe)this.getRecipe()).getRecipeOutput(), this.getRegistry());
     }
 
     /**
