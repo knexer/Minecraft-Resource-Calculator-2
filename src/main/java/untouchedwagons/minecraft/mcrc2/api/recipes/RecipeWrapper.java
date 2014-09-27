@@ -1,6 +1,7 @@
 package untouchedwagons.minecraft.mcrc2.api.recipes;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
@@ -86,17 +87,7 @@ public abstract class RecipeWrapper
     protected void addIngredient(ItemStack is)
     {
         if (is.getItem().hasContainerItem(is))
-        {
-            ItemStack by_product = is.getItem().getContainerItem(is);
-
-            if (!this.by_products.containsKey(by_product))
-                this.by_products.put(by_product, by_product.stackSize);
-            else
-                this.by_products.put(
-                    by_product,
-                    this.by_products.get(by_product) + by_product.stackSize
-                );
-        }
+            this.addByProduct(is.getItem().getContainerItem(is));
 
         ItemStack is2;
 
@@ -108,6 +99,8 @@ public abstract class RecipeWrapper
 
             if (is2.isItemEqual(is))
             {
+                is2.stackSize += is.stackSize;
+
                 this.getIngredients().put(
                     is2,
                     this.getIngredients().get(is2) + is.stackSize
@@ -137,6 +130,25 @@ public abstract class RecipeWrapper
             this.getIngredients().put(
                     list,
                     this.getIngredients().get(list) + count
+            );
+    }
+
+    protected void addIngredient(FluidStack fluid)
+    {
+
+    }
+
+    private void addByProduct(ItemStack by_product)
+    {
+        if (by_product == null)
+            return;
+
+        if (!this.by_products.containsKey(by_product))
+            this.by_products.put(by_product, by_product.stackSize);
+        else
+            this.by_products.put(
+                    by_product,
+                    this.by_products.get(by_product) + by_product.stackSize
             );
     }
 }

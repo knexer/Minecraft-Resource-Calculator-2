@@ -75,11 +75,18 @@ public class GameRegistry {
         {
             net.minecraft.item.Item i = (net.minecraft.item.Item)io;
 
-            // PotionItem's getSubItems method can't be trusted
-            if (i == Items.potionitem)
-                PotionHelper.getSubItems(items);
-            else
-                i.getSubItems(i, null, items);
+            try {
+                // PotionItem's getSubItems method can't be trusted
+                if (i == Items.potionitem)
+                    PotionHelper.getSubItems(items);
+                else
+                    i.getSubItems(i, null, items);
+            }
+            catch (Exception npe)
+            {
+                // Extra Utilities' Microblocks are known to cause NullPointerExceptions. *Looks in RWTema's general direction*
+                // ChickenBones' Microblocks are known to cause NullPointerExceptions. *Looks in ChickenBones's general direction*
+            }
         }
 
         String item_mod_id, unlocalized_name, localized_name;
@@ -88,27 +95,27 @@ public class GameRegistry {
 
         for (ItemStack is : items)
         {
-            matcher = GameRegistry.ModIDRegex.matcher(Utilities.getModId(is.getItem()));
+            try {
+                matcher = GameRegistry.ModIDRegex.matcher(Utilities.getModId(is.getItem()));
 
-            if (!matcher.find())
-                continue;
+                if (!matcher.find())
+                    continue;
 
-            item_mod_id = matcher.group(1);
-            mod = this.mods.get(item_mod_id);
+                item_mod_id = matcher.group(1);
+                mod = this.mods.get(item_mod_id);
 
-            if (mod == null)
-                FMLLog.severe("mod \"%s\" is null", item_mod_id);
+                unlocalized_name = this.registry.getUnlocalizedName(is);
+                localized_name = this.registry.getLocalizedName(is);
 
-            unlocalized_name = this.registry.getUnlocalizedName(is);
-            localized_name = this.registry.getLocalizedName(is);
+                mod.getItems()
+                        .put(unlocalized_name,
+                                new Item(unlocalized_name, localized_name));
 
-            // A tile.null shows up somehow, don't know why
-            if (unlocalized_name.equals("tile.null"))
-                continue;
-
-            mod.getItems()
-                    .put(unlocalized_name,
-                            new Item(unlocalized_name, localized_name));
+            }
+            catch (Exception n)
+            {
+                // Forestry's research notes are known to cause NPEs when getting the localized name. *Looks in Sengir's general direction*
+            }
         }
     }
 
@@ -173,61 +180,55 @@ public class GameRegistry {
         boolean filter_recipe;
         StackWrapper result;
         Matcher matcher;
-        String result_mod_id;
-        String unlocalized_name;
+        String result_mod_id = null;
+        String unlocalized_name = null;
 
         for (IModSupportService support_service : this.support_services)
         {
             for(RecipeWrapper wrapped_recipe : support_service) {
-                filter_recipe = false;
-
-                if (wrapped_recipe == null)
-                    continue;
-
-                try {
-                    wrapped_recipe.parse();
-                } catch (NullPointerException npe) {
-                    System.out.println("Caught a NullPointerException when parsing a recipe. Steve's Carts' Experience Bank is known to cause these.");
-                    continue;
-                } catch (ArrayIndexOutOfBoundsException aioobe) {
-                    System.out.println("Caught an ArrayIndexOutOfBoundsException when parsing a recipe. Thermal Expansion is known to cause these when processing its rockwool recipes.");
-                    continue;
-                }
-
-                if (this.recipe_filters.containsKey(wrapped_recipe.getClass()))
+                try
                 {
-                    for (RecipeFilter filter : this.recipe_filters.get(wrapped_recipe.getClass()))
+                    filter_recipe = false;
+
+                    if (wrapped_recipe == null)
+                        continue;
+
+                    wrapped_recipe.parse();
+
+                    if (this.recipe_filters.containsKey(wrapped_recipe.getClass()))
                     {
-                        if (filter.shouldFilterRecipe(wrapped_recipe))
-                            filter_recipe = true;
+                        for (RecipeFilter filter : this.recipe_filters.get(wrapped_recipe.getClass()))
+                        {
+                            if (filter.shouldFilterRecipe(wrapped_recipe))
+                                filter_recipe = true;
+                        }
                     }
-                }
 
-                if (filter_recipe)
-                    continue;
+                    if (filter_recipe)
+                        continue;
 
-                result = wrapped_recipe.getResult();
+                    result = wrapped_recipe.getResult();
 
-                result_mod_id = result.getOwningMod();
-                unlocalized_name = result.getUnlocalizedName();
+                    result_mod_id = result.getOwningMod();
+                    unlocalized_name = result.getUnlocalizedName();
 
-                matcher = ModIDRegex.matcher(result_mod_id);
+                    matcher = ModIDRegex.matcher(result_mod_id);
 
-                if (!matcher.find())
-                    continue;
+                    if (!matcher.find())
+                        continue;
 
-                result_mod_id = matcher.group(1);
+                    result_mod_id = matcher.group(1);
 
-                try {
                     this.mods.get(result_mod_id)
                             .getItems()
                             .get(unlocalized_name)
                             .getRecipes()
                             .add(wrapped_recipe);
+
                 }
-                catch (NullPointerException npe)
+                catch (Exception e)
                 {
-                    System.out.format("Mod ID: %s, Item's unlocalized_name: %s\n", result_mod_id, unlocalized_name);
+                    //
                 }
             }
         }

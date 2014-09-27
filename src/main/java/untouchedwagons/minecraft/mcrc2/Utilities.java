@@ -7,6 +7,6 @@ public abstract class Utilities {
     public static String getModId(Item item) {
         GameRegistry.UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(item);
 
-        return id == null || id.modId.equals("") ? "Vanilla" : id.modId;
+        return id == null || id.modId.equals("") ? "minecraft" : id.modId;
     }
 }

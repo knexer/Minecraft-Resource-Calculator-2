@@ -233,10 +233,20 @@ public class CustomLocalizationRegistry implements ILocalizationRegistry {
 
     public String getUnlocalizedName(ItemStack is)
     {
+        StringBuilder builder = new StringBuilder();
+
         if (this.registry.containsKey(is))
-            return this.registry.get(is);
+            builder.append(this.registry.get(is));
         else
-            return is.getUnlocalizedName();
+            builder.append(is.getUnlocalizedName());
+
+        if (is.getHasSubtypes())
+        {
+            builder.append(":");
+            builder.append(is.getItemDamage());
+        }
+
+        return builder.toString();
     }
 
     public String getLocalizedName(ItemStack is)
