@@ -18,21 +18,21 @@ public interface ILocalizationRegistry {
     /**
      * Register a single Block with a custom unlocalized and localized name
      * @param net.minecraft.block.Block b
-     * @param java.lang.String unlocalized_name
-     * @param java.lang.String name
+     * @param java.lang.String unlocalized_name The 'correct' unlocalized name of the block
+     * @param java.lang.String name the display name of the block
      */
     public void registerSingleBlockWithName(Block b, String unlocalized_name, String name);
 
     /**
      * Register a block that has subtypes (e.g. Planks) with custom unlocalized names
-     * @param net.minecraft.block.b
+     * @param net.minecraft.block.Block b
      * @param java.lang.String[] unlocalized_names
      */
     public void registerMultiBlock(Block b, String[] unlocalized_names);
 
     /**
      * Register a block that has subtypes (e.g. Planks) with custom unlocalized and localized names
-     * @param net.minecraft.block.b
+     * @param net.minecraft.block.Block b
      * @param java.lang.String[] unlocalized_names
      * @param java.lang.String[] names
      */

@@ -2,6 +2,10 @@ package untouchedwagons.minecraft.mcrc2.api.collections;
 
 import java.util.Iterator;
 
+/**
+ * A NullIterator never has anything, could be useful
+ * @param <T>
+ */
 public class NullIterator<T> implements Iterator<T> {
     @Override
     public boolean hasNext() {

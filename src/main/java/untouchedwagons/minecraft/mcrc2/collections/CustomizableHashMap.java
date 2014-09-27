@@ -2,9 +2,6 @@ package untouchedwagons.minecraft.mcrc2.collections;
 
 import java.util.HashMap;
 
-/**
- * Created by Jordan on 8/3/2014.
- */
 public class CustomizableHashMap<K, V> extends HashMap<K, V> {
     private Equatable comparer;
 

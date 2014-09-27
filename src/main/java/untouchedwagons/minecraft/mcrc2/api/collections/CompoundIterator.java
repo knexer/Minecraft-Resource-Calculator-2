@@ -2,6 +2,10 @@ package untouchedwagons.minecraft.mcrc2.api.collections;
 
 import java.util.Iterator;
 
+/**
+ * A CompoundIterator presents multiple iterators as one contiguous iterator
+ * @param <T>
+ */
 public class CompoundIterator<T> implements Iterator<T> {
     private final Iterator<T>[] iterators;
     private int pos = 0;

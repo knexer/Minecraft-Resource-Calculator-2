@@ -1,13 +1,16 @@
 package untouchedwagons.minecraft.mcrc2.minecraft.filters;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.filters.RecipeFilter;
 import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
 import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapedRecipesWrapper;
 
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -17,7 +20,7 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
 
     @Override
     public Class[] getRecipeWrapperClasses() {
-        return new Class[] { ShapedRecipesWrapper.class};
+        return new Class[] { ShapedRecipesWrapper.class };
     }
 
     @Override
@@ -87,6 +90,28 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
 
     public boolean isSelfReplicatingRecipe(RecipeWrapper recipe)
     {
+        StackWrapper result = recipe.getResult();
+
+        if (!(result instanceof ItemStackWrapper))
+            return false;
+
+        ItemStack result_item = (ItemStack) result.getUnderlyingStack();
+
+        for (Object ingredient : recipe.getIngredients().keySet())
+        {
+            if (ingredient instanceof ItemStack && ((ItemStack)ingredient).isItemEqual(result_item))
+                return true;
+
+            if (ingredient instanceof List)
+            {
+                for (Object ore_stack : ((List)ingredient))
+                {
+                    if (OreDictionary.itemMatches(result_item, (ItemStack) ore_stack, false))
+                        return true;
+                }
+            }
+        }
+
         return false;
     }
 }

@@ -3,6 +3,10 @@ package untouchedwagons.minecraft.mcrc2.api.stacks;
 import net.minecraftforge.fluids.FluidStack;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 
+/**
+ * Used if a recipe 'returns' a fluid for its recipe like with Thermal Expansion's
+ * Magma Crucible
+ */
 public class FluidStackWrapper implements StackWrapper {
     private final FluidStack stack;
     private final ILocalizationRegistry registry;

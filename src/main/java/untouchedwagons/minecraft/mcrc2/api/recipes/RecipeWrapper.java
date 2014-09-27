@@ -33,6 +33,10 @@ public abstract class RecipeWrapper
         this.ingredients = new HashMap<Object, Integer>();
     }
 
+    /**
+     * Get all by-products (returned items like emtpy buckets and used tools)
+     * @return java.util.Map
+     */
     public Map<ItemStack, Integer> getByProducts() {
         return by_products;
     }
@@ -55,6 +59,10 @@ public abstract class RecipeWrapper
         return this.recipe;
     }
 
+    /**
+     * Gets the localization registry passed through the constructor
+     * @return untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry
+     */
     public ILocalizationRegistry getRegistry() {
         return registry;
     }
@@ -114,14 +122,19 @@ public abstract class RecipeWrapper
     }
 
     /**
-     * Add an OreDict ingredient
-     * @param java.util.List list
+     * Add an OreDict ingredient (redirects to addIngredient(List, int))
+     * @param java.util.List list The OreDict list entry in the recipe
      */
     protected void addIngredient(List list)
     {
         this.addIngredient(list, 1);
     }
 
+    /**
+     * Adds a specific number of OreDict ingredients
+     * @param java.util.List list
+     * @param int count
+     */
     protected void addIngredient(List list, int count)
     {
         if (!this.getIngredients().containsKey(list))
@@ -133,9 +146,23 @@ public abstract class RecipeWrapper
             );
     }
 
+    /**
+     * Adds a FluidStack ingredient, multiple identical fluidstacks are combined
+     * @param net.minecraftforge.fluids.FluidStack fluid
+     */
     protected void addIngredient(FluidStack fluid)
     {
+        FluidStack fs;
 
+        for (Map.Entry<Object, Integer> entry : this.ingredients.entrySet())
+        {
+            if (!(entry.getKey() instanceof FluidStack)) continue;
+
+            fs = (FluidStack) entry.getKey();
+
+            if (fs.fluidID == fluid.fluidID)
+                fs.amount += fluid.amount;
+        }
     }
 
     private void addByProduct(ItemStack by_product)

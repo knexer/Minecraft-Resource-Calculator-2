@@ -1,26 +1,30 @@
 package untouchedwagons.minecraft.mcrc2.registry;
 
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+
 import untouchedwagons.minecraft.mcrc2.CustomLocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.PotionHelper;
 import untouchedwagons.minecraft.mcrc2.RecipeWrapperFactoryRepository;
-import untouchedwagons.minecraft.mcrc2.Utilities;
+import untouchedwagons.minecraft.mcrc2.api.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.filters.RecipeFilter;
 import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.ServiceLoader;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GameRegistry {
     private final ILocalizationRegistry registry;
@@ -28,8 +32,6 @@ public class GameRegistry {
     private final Map<String, MinecraftMod> mods;
     private final List<IModSupportService> support_services;
     private final Map<Class, List<RecipeFilter>> recipe_filters;
-
-    public static final Pattern ModIDRegex = Pattern.compile("^(\\w+)");
 
     private boolean ready;
 
@@ -53,7 +55,7 @@ public class GameRegistry {
 
         for (ModContainer mod : Loader.instance().getActiveModList())
         {
-            matcher = GameRegistry.ModIDRegex.matcher(mod.getModId());
+            matcher = Utilities.ModIDRegex.matcher(mod.getModId());
 
             if (!matcher.find())
                 continue;
@@ -96,7 +98,7 @@ public class GameRegistry {
         for (ItemStack is : items)
         {
             try {
-                matcher = GameRegistry.ModIDRegex.matcher(Utilities.getModId(is.getItem()));
+                matcher = Utilities.ModIDRegex.matcher(Utilities.getModId(is.getItem()));
 
                 if (!matcher.find())
                     continue;
@@ -212,7 +214,7 @@ public class GameRegistry {
                     result_mod_id = result.getOwningMod();
                     unlocalized_name = result.getUnlocalizedName();
 
-                    matcher = ModIDRegex.matcher(result_mod_id);
+                    matcher = Utilities.ModIDRegex.matcher(result_mod_id);
 
                     if (!matcher.find())
                         continue;

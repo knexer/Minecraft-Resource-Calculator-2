@@ -8,9 +8,6 @@ import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.UnknownRecipeExcep
 
 import java.util.HashMap;
 
-/**
- * Created by Jordan on 8/6/2014.
- */
 public class RecipeWrapperFactoryRepository extends HashMap<Class, RecipeWrapperFactory> implements IRecipeWrapperFactoryRepository {
     private ILocalizationRegistry registry;
 
