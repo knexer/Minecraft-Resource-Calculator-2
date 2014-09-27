@@ -1,0 +1,3 @@
+[submodule "src/main/java/untouchedwagons/minecraft/mcrc2/api"]
+path = src/main/java/untouchedwagons/minecraft/mcrc2/api
+url = https://github.com/UntouchedWagons/Minecraft-Resource-Calculator-2-api.git
