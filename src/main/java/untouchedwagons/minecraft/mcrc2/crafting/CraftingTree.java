@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-public class CraftingTree implements ICraftingTree {
+public class CraftingTree {
     private ILocalizationRegistry localization_registry;
     private String result;
     private Integer amount;
@@ -24,7 +24,7 @@ public class CraftingTree implements ICraftingTree {
 
     private GameRegistry registry;
     private Map<String, Integer> selected_recipes;
-    private Map<String, ICraftingTree> ingredients;
+    private Map<String, CraftingTree> ingredients;
     private Map<String, Integer> tool_registry;
 
     public CraftingTree(ILocalizationRegistry localization_registry,
@@ -36,7 +36,7 @@ public class CraftingTree implements ICraftingTree {
         this.excess_items = excess_items;
         this.tool_registry = registry.getTools();
 
-        this.ingredients = new HashMap<String, ICraftingTree>();
+        this.ingredients = new HashMap<String, CraftingTree>();
         this.excess = false;
     }
 
@@ -114,7 +114,7 @@ public class CraftingTree implements ICraftingTree {
                         this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey())
                 );
 
-                ICraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items);
+                CraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items);
                 crafting_tree.craft(ingredient_name, items_required);
 
                 this.ingredients.put(ingredient_name, crafting_tree);
@@ -127,7 +127,7 @@ public class CraftingTree implements ICraftingTree {
                         this.registry.getOredictName((List) ingredient.getKey())
                 );
 
-                ICraftingTree crafting_tree = new OreDictCraftingTree();
+                CraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items);
                 crafting_tree.craft(oredict_name, ingredient.getValue());
 
                 this.ingredients.put(oredict_name, crafting_tree);
@@ -157,7 +157,7 @@ public class CraftingTree implements ICraftingTree {
         return this.excess;
     }
 
-    public Map<String, ICraftingTree> getIngredients() {
+    public Map<String, CraftingTree> getIngredients() {
         return this.ingredients;
     }
 

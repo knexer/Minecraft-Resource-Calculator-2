@@ -58,9 +58,20 @@ public class GameRegistry {
 
     public void collectOreDictRegistrations()
     {
+        ItemStack first_item;
+        List<ItemStack> oredict_items;
+        MinecraftMod forge = this.mods.get("Forge");
+
         for (String oredict_name : OreDictionary.getOreNames())
         {
-            this.oredict_reverse_lookup.put(OreDictionary.getOres(oredict_name), oredict_name);
+            oredict_items = OreDictionary.getOres(oredict_name);
+            first_item = oredict_items.get(0);
+
+            // Add the OreDict list to forge's list of items. We'll use the localized name of the first item in the
+            // list as the item's name
+            forge.getItems().put(oredict_name, new Item(oredict_name, this.registry.getLocalizedName(first_item)));
+            
+            this.oredict_reverse_lookup.put(oredict_items, oredict_name);
         }
     }
 
