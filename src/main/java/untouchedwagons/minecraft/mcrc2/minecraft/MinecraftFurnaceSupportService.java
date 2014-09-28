@@ -11,10 +11,8 @@ import untouchedwagons.minecraft.mcrc2.minecraft.recipes.furnace.FurnaceRecipeLi
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.furnace.FurnaceRecipeWrapper;
 
 import java.util.Iterator;
+import java.util.Map;
 
-/**
- * Created by Jordan on 8/9/2014.
- */
 public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private Iterator furnace_iterator;
     private ILocalizationRegistry registry;
@@ -26,6 +24,11 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
 
     @Override
     public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository repository) {
+
+    }
+
+    @Override
+    public void setToolRegistry(Map<String, Integer> registry) {
 
     }
 

@@ -21,6 +21,7 @@ import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapelessRecip
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private Iterator recipes_iterator;
@@ -78,6 +79,11 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         wrapper_repo.put(ShapedOreRecipe.class, new ShapedOreRecipesWrapperFactory());
         wrapper_repo.put(ShapelessRecipes.class, new ShapelessRecipesWrapperFactory());
         wrapper_repo.put(ShapedRecipes.class, new ShapedRecipesWrapperFactory());
+    }
+
+    @Override
+    public void setToolRegistry(Map<String, Integer> registry) {
+
     }
 
     @Override

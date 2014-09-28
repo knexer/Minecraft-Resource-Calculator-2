@@ -8,6 +8,7 @@ import untouchedwagons.minecraft.mcrc2.minecraft.recipes.enchanting.EnchantingRe
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.enchanting.EnchantingRecipeWrapper;
 
 import java.util.Iterator;
+import java.util.Map;
 
 public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private final RecipeWrapper[] recipes;
@@ -27,6 +28,11 @@ public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrap
 
     @Override
     public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository repository) {
+
+    }
+
+    @Override
+    public void setToolRegistry(Map<String, Integer> registry) {
 
     }
 

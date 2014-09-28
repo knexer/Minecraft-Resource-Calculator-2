@@ -32,6 +32,7 @@ public class GameRegistry {
     private final Map<String, MinecraftMod> mods;
     private final List<IModSupportService> support_services;
     private final Map<Class, List<RecipeFilter>> recipe_filters;
+    private final Map<String, Integer> tools;
 
     private boolean ready;
 
@@ -40,6 +41,7 @@ public class GameRegistry {
         this.wrapper_factory_repo = new RecipeWrapperFactoryRepository(this.registry);
         this.support_services = new ArrayList<IModSupportService>();
         this.recipe_filters = new HashMap<Class, List<RecipeFilter>>();
+        this.tools = new HashMap<String, Integer>();
 
         this.ready = false;
 
@@ -149,6 +151,7 @@ public class GameRegistry {
         {
             service.setLocalizationRegistry(this.registry);
             service.setRecipeWrapperFactoryRepository(this.wrapper_factory_repo);
+            service.setToolRegistry(this.tools);
 
             this.support_services.add(service);
         }

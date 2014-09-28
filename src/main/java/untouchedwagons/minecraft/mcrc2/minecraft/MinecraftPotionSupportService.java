@@ -10,6 +10,7 @@ import untouchedwagons.minecraft.mcrc2.minecraft.recipes.potion.PotionRecipe;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.potion.PotionRecipeWrapper;
 
 import java.util.Iterator;
+import java.util.Map;
 
 public class MinecraftPotionSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private ILocalizationRegistry registry;
@@ -30,6 +31,11 @@ public class MinecraftPotionSupportService implements Iterator<RecipeWrapper>, I
 
     @Override
     public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository repository) {
+
+    }
+
+    @Override
+    public void setToolRegistry(Map<String, Integer> registry) {
 
     }
 
