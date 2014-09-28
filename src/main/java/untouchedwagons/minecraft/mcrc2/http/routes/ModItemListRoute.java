@@ -62,7 +62,10 @@ public class ModItemListRoute implements RouteHandler {
 
         for (Map.Entry<String, Item> entry : mod.getItems().entrySet())
         {
-            item_list_object.add(entry.getKey(), new JsonPrimitive(entry.getValue().getLocalized_name()));
+            item_list_object.add(
+                    String.format("%s:%s", mod_id, entry.getKey()),
+                    new JsonPrimitive(entry.getValue().getLocalized_name())
+            );
         }
 
         return item_list_object.toString();

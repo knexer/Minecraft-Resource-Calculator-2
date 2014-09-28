@@ -13,18 +13,6 @@ public class MinecraftResourceCalculatorMod
     public static CommonProxy proxy;
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-
-    }
-
-    @Mod.EventHandler
-    public void load(FMLInitializationEvent event)
-    {
-
-    }
-
-    @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
         proxy.collectRecipes();

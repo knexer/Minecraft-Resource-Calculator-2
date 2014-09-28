@@ -26,4 +26,9 @@ public class MinecraftMod {
     }
 
     public Map<String, Item> getItems() { return items; }
+
+    public Item getItem(String item)
+    {
+        return this.items.get(item);
+    }
 }

@@ -9,6 +9,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import net.minecraftforge.oredict.OreDictionary;
 import untouchedwagons.minecraft.mcrc2.CustomLocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.PotionHelper;
 import untouchedwagons.minecraft.mcrc2.RecipeWrapperFactoryRepository;
@@ -25,27 +26,42 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GameRegistry {
-    private final ILocalizationRegistry registry;
-    private final RecipeWrapperFactoryRepository wrapper_factory_repo;
     private final Map<String, MinecraftMod> mods;
-    private final List<IModSupportService> support_services;
+    private final HashMap<List, String> oredict_reverse_lookup;
     private final Map<Class, List<RecipeFilter>> recipe_filters;
+    private final ILocalizationRegistry registry;
+    private final List<IModSupportService> support_services;
+    private final Map<String, Integer> selected_recipes;
     private final Map<String, Integer> tools;
+    private final RecipeWrapperFactoryRepository wrapper_factory_repo;
 
     private boolean ready;
 
+    public static final Pattern ModItemRegex = Pattern.compile("^(\\w+):(\\w+)$");
+
     public GameRegistry() {
-        this.registry = new CustomLocalizationRegistry();
-        this.wrapper_factory_repo = new RecipeWrapperFactoryRepository(this.registry);
-        this.support_services = new ArrayList<IModSupportService>();
+        this.oredict_reverse_lookup = new HashMap<List, String>();
         this.recipe_filters = new HashMap<Class, List<RecipeFilter>>();
+        this.registry = new CustomLocalizationRegistry();
+        this.selected_recipes = new HashMap<String, Integer>();
+        this.support_services = new ArrayList<IModSupportService>();
         this.tools = new HashMap<String, Integer>();
+        this.wrapper_factory_repo = new RecipeWrapperFactoryRepository(this.registry);
 
         this.ready = false;
 
         this.mods = new HashMap<String, MinecraftMod>();
+    }
+
+    public void collectOreDictRegistrations()
+    {
+        for (String oredict_name : OreDictionary.getOreNames())
+        {
+            this.oredict_reverse_lookup.put(OreDictionary.getOres(oredict_name), oredict_name);
+        }
     }
 
     public void collectMods()
@@ -241,6 +257,22 @@ public class GameRegistry {
 
     public Map<String, MinecraftMod> getMods() {
         return mods;
+    }
+
+    public String getOredictName(List oredict_list)
+    {
+        return this.oredict_reverse_lookup.get(oredict_list);
+    }
+
+    public HashMap<List, String> getOredictReverseLookup() { return oredict_reverse_lookup; }
+
+    public Map<String, Integer> getSelectedRecipes() { return selected_recipes; }
+
+    public Map<String, Integer> getTools() { return tools; }
+
+    public MinecraftMod getMod(String mod_id)
+    {
+        return this.mods.get(mod_id);
     }
 
     public void markAsReady(boolean b) {
