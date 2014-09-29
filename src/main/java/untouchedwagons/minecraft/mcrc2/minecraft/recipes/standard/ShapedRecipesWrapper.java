@@ -11,11 +11,8 @@ import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 public class ShapedRecipesWrapper extends RecipeWrapper
 {
-    public ShapedRecipesWrapper(IRecipe recipe, ILocalizationRegistry registry) throws InvalidRecipeException {
+    public ShapedRecipesWrapper(IRecipe recipe, ILocalizationRegistry registry) {
         super(recipe, registry);
-
-        if (!(recipe instanceof ShapedRecipes))
-            throw new InvalidRecipeException("Recipe instance is not of a ShapedRecipes.");
     }
 
     @Override

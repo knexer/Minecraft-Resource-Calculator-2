@@ -5,7 +5,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
-import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
 import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
 import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
@@ -13,12 +12,9 @@ import java.util.List;
 
 public class ShapedOreRecipeWrapper extends RecipeWrapper
 {
-    public ShapedOreRecipeWrapper(IRecipe recipe, ILocalizationRegistry registry) throws InvalidRecipeException
+    public ShapedOreRecipeWrapper(IRecipe recipe, ILocalizationRegistry registry)
     {
         super(recipe, registry);
-        
-        if (!(recipe instanceof ShapedOreRecipe))
-            throw new InvalidRecipeException("Recipe instance is not of a ShapedOreRecipe.");
     }
 
     @Override

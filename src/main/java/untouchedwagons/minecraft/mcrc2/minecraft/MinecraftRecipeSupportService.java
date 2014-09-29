@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Map;
 
 public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, IModSupportService {
-    private Iterator recipes_iterator;
-    private List<Class> reported_unknown_recipes = new ArrayList<Class>();
+    private final Iterator recipes_iterator;
     private Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers;
+    private ILocalizationRegistry registry;
+
+    public MinecraftRecipeSupportService() {
+        this.recipes_iterator = CraftingManager.getInstance().getRecipeList().iterator();
+    }
 
     public boolean hasNext() {
-        if (this.recipes_iterator == null)
-            this.recipes_iterator = CraftingManager.getInstance().getRecipeList().iterator();
-
         return this.recipes_iterator.hasNext();
     }
 
@@ -53,7 +54,7 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         }
 
         try {
-            return (RecipeWrapper) wrapper_constructor.newInstance(recipe);
+            return (RecipeWrapper) wrapper_constructor.newInstance(recipe, this.registry);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -72,7 +73,7 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
 
     @Override
     public void setLocalizationRegistry(ILocalizationRegistry registry) {
-
+        this.registry = registry;
     }
 
     @Override
@@ -99,11 +100,12 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
     {
         for (Constructor constructor : wrapper.getConstructors())
         {
-            Class[] parameters = constructor.getExceptionTypes();
+            Class[] parameters = constructor.getParameterTypes();
 
-            if (parameters.length != 1) continue;
+            if (parameters.length != 2) continue;
 
-            if (parameters[0] != IRecipe.class) continue;
+            if (parameters[0] != IRecipe.class &&
+                parameters[1] != ILocalizationRegistry.class) continue;
 
             return constructor;
         }

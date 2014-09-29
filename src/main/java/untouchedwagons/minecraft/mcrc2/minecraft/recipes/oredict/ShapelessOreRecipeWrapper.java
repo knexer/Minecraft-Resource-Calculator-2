@@ -5,19 +5,15 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
-import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
 import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
 import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
 import java.util.List;
 
 public class ShapelessOreRecipeWrapper extends RecipeWrapper {
-    public ShapelessOreRecipeWrapper(IRecipe recipe, ILocalizationRegistry registry) throws InvalidRecipeException
+    public ShapelessOreRecipeWrapper(IRecipe recipe, ILocalizationRegistry registry)
     {
         super(recipe, registry);
-
-        if (!(recipe instanceof ShapelessOreRecipe))
-            throw new InvalidRecipeException("Recipe instance is not of a ShapelessOreRecipe.");
     }
 
     @Override

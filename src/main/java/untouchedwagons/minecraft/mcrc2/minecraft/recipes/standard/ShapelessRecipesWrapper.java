@@ -5,7 +5,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
-import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
 import untouchedwagons.minecraft.mcrc2.api.stacks.ItemStackWrapper;
 import untouchedwagons.minecraft.mcrc2.api.stacks.StackWrapper;
 
@@ -13,12 +12,9 @@ import java.util.Arrays;
 
 public class ShapelessRecipesWrapper extends RecipeWrapper
 {
-    public ShapelessRecipesWrapper(IRecipe recipe, ILocalizationRegistry registry) throws InvalidRecipeException
+    public ShapelessRecipesWrapper(IRecipe recipe, ILocalizationRegistry registry)
     {
         super(recipe, registry);
-
-        if (!(recipe instanceof ShapelessRecipes))
-            throw new InvalidRecipeException("Recipe instance is not of a ShapelessRecipes.");
     }
 
     @Override
