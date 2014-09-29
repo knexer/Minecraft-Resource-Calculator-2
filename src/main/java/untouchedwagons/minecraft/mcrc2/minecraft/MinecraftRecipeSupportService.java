@@ -8,16 +8,14 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
-import untouchedwagons.minecraft.mcrc2.api.recipes.IRecipeWrapperFactoryRepository;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
-import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapperFactory;
-import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
-import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.UnknownRecipeException;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.oredict.ShapedOreRecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.oredict.ShapelessOreRecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapedRecipesWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapelessRecipesWrapper;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,8 +23,8 @@ import java.util.Map;
 
 public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private Iterator recipes_iterator;
-    private IRecipeWrapperFactoryRepository wrapper_repo;
     private List<Class> reported_unknown_recipes = new ArrayList<Class>();
+    private Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers;
 
     public boolean hasNext() {
         if (this.recipes_iterator == null)
@@ -40,25 +38,31 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
             return null;
 
         IRecipe recipe = (IRecipe)this.recipes_iterator.next();
-        RecipeWrapperFactory factory;
+        Class<? extends RecipeWrapper> recipe_wrapper_class = this.wrapper_providers.get(recipe.getClass());
 
-        try {
-            factory = this.wrapper_repo.get(recipe);
-        } catch (UnknownRecipeException e) {
-            if (!this.reported_unknown_recipes.contains(recipe.getClass()))
-            {
-                this.reported_unknown_recipes.add(recipe.getClass());
-                System.out.println("Warning: could not process recipe of type " + recipe.getClass().toString());
-            }
+        if (recipe_wrapper_class == null) {
+            System.out.println("Warning: could not process recipe of type " + recipe.getClass());
+            return null;
+        }
+
+        Constructor wrapper_constructor = this.getConstructorForRecipeWrapper(recipe_wrapper_class);
+
+        if (wrapper_constructor == null) {
+            System.out.println("Warning: could not find appropriate constructor for RecipeWrapper subclass: " + recipe_wrapper_class);
             return null;
         }
 
         try {
-            return factory.createWrapper(recipe);
-        } catch (InvalidRecipeException e) {
-            System.out.println("InvalidRecipeException");
-            return null;
+            return (RecipeWrapper) wrapper_constructor.newInstance(recipe);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+
+        return null;
     }
 
     @Override
@@ -72,13 +76,13 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository wrapper_repo) {
-        this.wrapper_repo = wrapper_repo;
+    public void setRecipeWrapperRepository(Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers) {
+        this.wrapper_providers = wrapper_providers;
 
-        wrapper_repo.put(ShapelessOreRecipe.class, new ShapelessOreRecipesWrapperFactory());
-        wrapper_repo.put(ShapedOreRecipe.class, new ShapedOreRecipesWrapperFactory());
-        wrapper_repo.put(ShapelessRecipes.class, new ShapelessRecipesWrapperFactory());
-        wrapper_repo.put(ShapedRecipes.class, new ShapedRecipesWrapperFactory());
+        wrapper_providers.put(ShapelessOreRecipe.class, ShapelessOreRecipeWrapper.class);
+        wrapper_providers.put(ShapedOreRecipe.class, ShapedOreRecipeWrapper.class);
+        wrapper_providers.put(ShapelessRecipes.class, ShapelessRecipesWrapper.class);
+        wrapper_providers.put(ShapedRecipes.class, ShapedRecipesWrapper.class);
     }
 
     @Override
@@ -91,31 +95,19 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         return this;
     }
 
-    private class ShapelessOreRecipesWrapperFactory extends RecipeWrapperFactory
+    private Constructor getConstructorForRecipeWrapper(Class<? extends RecipeWrapper> wrapper)
     {
-        public RecipeWrapper createWrapper(IRecipe recipe) throws InvalidRecipeException {
-            return new ShapelessOreRecipeWrapper(recipe, this.getRegistry());
-        }
-    }
+        for (Constructor constructor : wrapper.getConstructors())
+        {
+            Class[] parameters = constructor.getExceptionTypes();
 
-    private class ShapedOreRecipesWrapperFactory extends RecipeWrapperFactory
-    {
-        public RecipeWrapper createWrapper(IRecipe recipe) throws InvalidRecipeException {
-            return new ShapedOreRecipeWrapper(recipe, this.getRegistry());
-        }
-    }
+            if (parameters.length != 1) continue;
 
-    private class ShapelessRecipesWrapperFactory extends RecipeWrapperFactory
-    {
-        public RecipeWrapper createWrapper(IRecipe recipe) throws InvalidRecipeException {
-            return new ShapelessRecipesWrapper(recipe, this.getRegistry());
-        }
-    }
+            if (parameters[0] != IRecipe.class) continue;
 
-    private class ShapedRecipesWrapperFactory extends RecipeWrapperFactory
-    {
-        public RecipeWrapper createWrapper(IRecipe recipe) throws InvalidRecipeException {
-            return new ShapedRecipesWrapper(recipe, this.getRegistry());
+            return constructor;
         }
+
+        return null;
     }
 }

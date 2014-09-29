@@ -16,6 +16,13 @@ public class Route {
         this.handler = handler;
     }
 
+    public Route(HttpMethod method, Pattern pattern, RouteHandler handler)
+    {
+        this.method = method;
+        this.pattern = pattern;
+        this.handler = handler;
+    }
+
     public HttpMethod getMethod() {
         return method;
     }

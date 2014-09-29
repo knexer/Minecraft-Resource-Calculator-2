@@ -4,7 +4,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
-import untouchedwagons.minecraft.mcrc2.api.recipes.IRecipeWrapperFactoryRepository;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.furnace.FurnaceRecipeList;
@@ -23,7 +22,7 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
     }
 
     @Override
-    public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository repository) {
+    public void setRecipeWrapperRepository(Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers) {
 
     }
 
@@ -59,6 +58,6 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
 
     @Override
     public void remove() {
-
+        throw new UnsupportedOperationException();
     }
 }

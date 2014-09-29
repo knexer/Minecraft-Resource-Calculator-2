@@ -1,8 +1,8 @@
 package untouchedwagons.minecraft.mcrc2.minecraft;
 
+import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
-import untouchedwagons.minecraft.mcrc2.api.recipes.IRecipeWrapperFactoryRepository;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.enchanting.EnchantingRecipe;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.enchanting.EnchantingRecipeWrapper;
@@ -27,7 +27,7 @@ public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrap
     }
 
     @Override
-    public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository repository) {
+    public void setRecipeWrapperRepository(Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers) {
 
     }
 

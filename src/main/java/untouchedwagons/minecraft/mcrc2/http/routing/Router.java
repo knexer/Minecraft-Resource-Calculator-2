@@ -9,6 +9,7 @@ import untouchedwagons.minecraft.mcrc2.http.exceptions.RouteNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -29,6 +30,11 @@ public class Router {
     public void addRoute(HttpMethod method, String path, RouteHandler handler)
     {
         this.routes.add(new Route(method, path, handler));
+    }
+
+    public void addRoute(HttpMethod method, Pattern pattern, RouteHandler handler)
+    {
+        this.routes.add(new Route(method, pattern, handler));
     }
 
     public FullHttpResponse dispatch (ChannelHandlerContext ctx, FullHttpRequest request)

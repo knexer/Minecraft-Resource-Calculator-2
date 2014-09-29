@@ -2,9 +2,9 @@ package untouchedwagons.minecraft.mcrc2.minecraft;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
-import untouchedwagons.minecraft.mcrc2.api.recipes.IRecipeWrapperFactoryRepository;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.potion.PotionRecipe;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.potion.PotionRecipeWrapper;
@@ -30,7 +30,7 @@ public class MinecraftPotionSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public void setRecipeWrapperFactoryRepository(IRecipeWrapperFactoryRepository repository) {
+    public void setRecipeWrapperRepository(Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers) {
 
     }
 

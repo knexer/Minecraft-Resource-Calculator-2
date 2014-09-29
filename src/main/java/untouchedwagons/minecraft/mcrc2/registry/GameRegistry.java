@@ -5,6 +5,7 @@ import cpw.mods.fml.common.ModContainer;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -12,7 +13,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import untouchedwagons.minecraft.mcrc2.CustomLocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.PotionHelper;
-import untouchedwagons.minecraft.mcrc2.RecipeWrapperFactoryRepository;
 import untouchedwagons.minecraft.mcrc2.api.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
@@ -36,7 +36,7 @@ public class GameRegistry {
     private final List<IModSupportService> support_services;
     private final Map<String, Integer> selected_recipes;
     private final Map<String, Integer> tools;
-    private final RecipeWrapperFactoryRepository wrapper_factory_repo;
+    private final Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers;
 
     private boolean ready;
 
@@ -49,7 +49,7 @@ public class GameRegistry {
         this.selected_recipes = new HashMap<String, Integer>();
         this.support_services = new ArrayList<IModSupportService>();
         this.tools = new HashMap<String, Integer>();
-        this.wrapper_factory_repo = new RecipeWrapperFactoryRepository(this.registry);
+        this.wrapper_providers = new HashMap<Class<? extends IRecipe>, Class<? extends RecipeWrapper>>();
 
         this.ready = false;
 
@@ -70,7 +70,7 @@ public class GameRegistry {
             // Add the OreDict list to forge's list of items. We'll use the localized name of the first item in the
             // list as the item's name
             forge.getItems().put(oredict_name, new Item(oredict_name, this.registry.getLocalizedName(first_item)));
-            
+
             this.oredict_reverse_lookup.put(oredict_items, oredict_name);
         }
     }
@@ -177,7 +177,7 @@ public class GameRegistry {
         for (IModSupportService service : ServiceLoader.load(IModSupportService.class))
         {
             service.setLocalizationRegistry(this.registry);
-            service.setRecipeWrapperFactoryRepository(this.wrapper_factory_repo);
+            service.setRecipeWrapperRepository(this.wrapper_providers);
             service.setToolRegistry(this.tools);
 
             this.support_services.add(service);
@@ -220,19 +220,19 @@ public class GameRegistry {
             for(RecipeWrapper wrapped_recipe : support_service) {
                 try
                 {
-                    filter_recipe = false;
-
                     if (wrapped_recipe == null)
                         continue;
 
                     wrapped_recipe.parse();
 
+                    filter_recipe = false;
+
                     if (this.recipe_filters.containsKey(wrapped_recipe.getClass()))
                     {
                         for (RecipeFilter filter : this.recipe_filters.get(wrapped_recipe.getClass()))
                         {
-                            if (filter.shouldFilterRecipe(wrapped_recipe))
-                                filter_recipe = true;
+                            if (filter_recipe = filter.shouldFilterRecipe(wrapped_recipe))
+                                break;
                         }
                     }
 

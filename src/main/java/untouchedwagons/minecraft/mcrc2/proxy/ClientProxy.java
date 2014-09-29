@@ -2,6 +2,7 @@ package untouchedwagons.minecraft.mcrc2.proxy;
 
 import io.netty.handler.codec.http.HttpMethod;
 import untouchedwagons.minecraft.mcrc2.http.WebSocketServer;
+import untouchedwagons.minecraft.mcrc2.http.routes.CraftRoute;
 import untouchedwagons.minecraft.mcrc2.http.routes.ModItemListRoute;
 import untouchedwagons.minecraft.mcrc2.http.routes.ModListRoute;
 import untouchedwagons.minecraft.mcrc2.http.routes.StaticPageRoute;
@@ -32,7 +33,8 @@ public class ClientProxy extends CommonProxy
         server.getRouter().addRoute(HttpMethod.GET, "\\.js$", new StaticPageRoute("application/javascript"));
 
         server.getRouter().addRoute(HttpMethod.GET, "^/mod-list$", new ModListRoute(this.game_registry));
-        server.getRouter().addRoute(HttpMethod.GET, "^/item-list/(.+)$", new ModItemListRoute(this.game_registry));
+        server.getRouter().addRoute(HttpMethod.GET, ModItemListRoute.mod_regex, new ModItemListRoute(this.game_registry));
+        server.getRouter().addRoute(HttpMethod.GET, CraftRoute.CraftRegex, new CraftRoute(this.game_registry));
 
         server.getRouter().addRoute(HttpMethod.GET, "^.+$", new StaticPageRoute("text/html"));
 
