@@ -16,7 +16,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class CraftRoute implements RouteHandler {
     private final GameRegistry game_registry;
 
-    public static final Pattern CraftRegex = Pattern.compile("^/craft/(.+)/(\\d+)$");
+    public static final Pattern CraftRegex = Pattern.compile("^/craft/(.+):(.+)/(\\d+)$");
 
     public CraftRoute(GameRegistry game_registry) {
         this.game_registry = game_registry;

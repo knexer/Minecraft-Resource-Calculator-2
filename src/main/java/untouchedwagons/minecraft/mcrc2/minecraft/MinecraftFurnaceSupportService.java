@@ -1,5 +1,6 @@
 package untouchedwagons.minecraft.mcrc2.minecraft;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
@@ -27,8 +28,8 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
     }
 
     @Override
-    public void setToolRegistry(Map<String, Integer> registry) {
-
+    public Map<ItemStack, Integer> getTools() {
+        return null;
     }
 
     @Override

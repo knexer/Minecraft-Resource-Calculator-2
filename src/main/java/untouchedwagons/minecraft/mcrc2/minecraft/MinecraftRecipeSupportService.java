@@ -1,5 +1,6 @@
 package untouchedwagons.minecraft.mcrc2.minecraft;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -87,8 +88,8 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public void setToolRegistry(Map<String, Integer> registry) {
-
+    public Map<ItemStack, Integer> getTools() {
+        return null;
     }
 
     @Override

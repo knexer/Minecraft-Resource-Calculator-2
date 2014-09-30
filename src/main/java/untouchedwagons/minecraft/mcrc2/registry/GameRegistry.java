@@ -40,7 +40,7 @@ public class GameRegistry {
 
     private boolean ready;
 
-    public static final Pattern ModItemRegex = Pattern.compile("^(\\w+):(\\w+)$");
+    public static final Pattern ModItemRegex = Pattern.compile("^(.+):(.+)$");
 
     public GameRegistry() {
         this.oredict_reverse_lookup = new HashMap<List, String>();
@@ -174,11 +174,25 @@ public class GameRegistry {
 
     public void collectRecipeProviders()
     {
+        Map<ItemStack, Integer> tools;
+
         for (IModSupportService service : ServiceLoader.load(IModSupportService.class))
         {
             service.setLocalizationRegistry(this.registry);
             service.setRecipeWrapperRepository(this.wrapper_providers);
-            service.setToolRegistry(this.tools);
+
+            tools = service.getTools();
+
+            if (tools != null)
+            {
+                for (Map.Entry<ItemStack, Integer> tool : tools.entrySet())
+                {
+                    String tool_domain = Utilities.getModId(tool.getKey());
+                    String tool_name = this.registry.getUnlocalizedName(tool.getKey());
+
+                    this.tools.put(String.format("%s:%s", tool_domain, tool_name), tool.getValue());
+                }
+            }
 
             this.support_services.add(service);
         }

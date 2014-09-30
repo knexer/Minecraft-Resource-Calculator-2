@@ -35,8 +35,8 @@ public class MinecraftPotionSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public void setToolRegistry(Map<String, Integer> registry) {
-
+    public Map<ItemStack, Integer> getTools() {
+        return null;
     }
 
     @Override

@@ -1,20 +1,26 @@
 package untouchedwagons.minecraft.mcrc2.crafting;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
+import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.registry.Item;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 public class CraftingTree {
+    private Map<String, Integer> tools_in_use;
+    private Date start_date;
     private ILocalizationRegistry localization_registry;
+    private String result_domain;
     private String result;
     private Integer amount;
     private Boolean excess;
@@ -29,30 +35,39 @@ public class CraftingTree {
 
     public CraftingTree(ILocalizationRegistry localization_registry,
                         GameRegistry registry,
-                        Map<String, Integer> excess_items) {
+                        Map<String, Integer> excess_items,
+                        Map<String, Integer> tools_in_use,
+                        Date start_date) {
         this.localization_registry = localization_registry;
         this.registry = registry;
         this.selected_recipes = registry.getSelectedRecipes();
         this.excess_items = excess_items;
+        this.tools_in_use = tools_in_use;
         this.tool_registry = registry.getTools();
+        this.start_date = start_date;
 
         this.ingredients = new HashMap<String, CraftingTree>();
         this.excess = false;
     }
 
-    public void craft(String item, Integer amount) {
+    public void craft(String domain, String item, Integer amount) throws InfiniteRecursionException {
+        this.result_domain = domain;
         this.result = item;
         this.amount = amount;
 
-        Matcher mod_id_matcher = GameRegistry.ModItemRegex.matcher(item);
-        MinecraftMod mod = this.registry.getMod(mod_id_matcher.group(1));
-        Item item_obj = mod.getItem(mod_id_matcher.group(2));
+        // If 5 seconds have passed since starting, we bail since we're probably stuck
+        // in an infinite loop
+        if(new Date().getTime() - this.start_date.getTime() > 5000)
+            throw new InfiniteRecursionException();
+
+        MinecraftMod mod = this.registry.getMod(this.result_domain);
+        Item item_obj = mod.getItem(this.result);
         List<RecipeWrapper> recipes = item_obj.getRecipes();
 
         // No need to go any further if there's no recipes
         if ((this.recipe_count = recipes.size()) == 0) return;
 
-        Integer recipe_pos = this.selected_recipes.get(item);
+        Integer recipe_pos = this.selected_recipes.get(this.result);
 
         // If the recipe position is out of bounds or the user has not
         // changed the default recipe
@@ -70,11 +85,11 @@ public class CraftingTree {
          */
         // If there is sufficient excess, use it
         Integer excess_count;
-        if ((excess_count = this.excess_items.get(item)) != null &&
+        if ((excess_count = this.excess_items.get(this.result)) != null &&
                 excess_count > amount)
         {
             this.excess = true;
-            this.excess_items.put(item, excess_count - amount);
+            this.excess_items.put(this.result, excess_count - amount);
 
             return;
         }
@@ -85,7 +100,7 @@ public class CraftingTree {
 
         // If there'll be leftover we'll add it to the list
         if (excess > 0)
-            this.handleExcess(item, excess);
+            this.handleExcess(this.result, excess);
 
         // Take care of any by-products made by the recipe
         // For example, an empty bucket when making cake
@@ -98,7 +113,9 @@ public class CraftingTree {
 
         for (Map.Entry<Object, Integer> ingredient : this.recipe.getIngredients().entrySet())
         {
-            Integer items_required;
+            Integer items_required = 1;
+            String ingredient_domain = "";
+            String ingredient_name = "";
 
             if (ingredient.getKey() instanceof ItemStack)
             {
@@ -109,29 +126,29 @@ public class CraftingTree {
                 else
                     items_required = ingredient.getValue() * bundles;
 
-                String ingredient_name = String.format("%s:%s",
-                        Utilities.getModId(((ItemStack)ingredient.getKey()).getItem()),
-                        this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey())
-                );
-
-                CraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items);
-                crafting_tree.craft(ingredient_name, items_required);
-
-                this.ingredients.put(ingredient_name, crafting_tree);
+                ingredient_domain = Utilities.getModId(((ItemStack)ingredient.getKey()).getItem());
+                ingredient_name = this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey());
             }
-
-            if (ingredient.getKey() instanceof List)
+            else if (ingredient.getKey() instanceof List)
             {
-                String oredict_name = String.format("%s:%s",
-                        "Forge",
-                        this.registry.getOredictName((List) ingredient.getKey())
-                );
-
-                CraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items);
-                crafting_tree.craft(oredict_name, ingredient.getValue());
-
-                this.ingredients.put(oredict_name, crafting_tree);
+                ingredient_domain = "Forge";
+                ingredient_name = this.registry.getOredictName((List) ingredient.getKey());
             }
+            else if (ingredient.getKey() instanceof FluidStack)
+            {
+                ingredient_domain = "Forge";
+                ingredient_name = ((FluidStack)ingredient.getKey()).getLocalizedName();
+            }
+            else
+            {
+                System.out.println("Found unknown ingredient type. Expected: ItemStack, List or FluidStack, got: " + ingredient.getKey().getClass());
+                continue;
+            }
+
+            CraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items, this.tools_in_use, this.start_date);
+            crafting_tree.craft(this.result_domain, ingredient_name, items_required);
+
+            this.ingredients.put(ingredient_domain + ":" + ingredient_name, crafting_tree);
         }
     }
 
