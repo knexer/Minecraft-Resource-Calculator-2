@@ -10,13 +10,10 @@ import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.registry.Item;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
-public class CraftingTree {
+public class CraftingTree implements ICraftingTree {
     private Map<String, Integer> tools_in_use;
     private Date start_date;
     private ILocalizationRegistry localization_registry;
@@ -30,7 +27,7 @@ public class CraftingTree {
 
     private GameRegistry registry;
     private Map<String, Integer> selected_recipes;
-    private Map<String, CraftingTree> ingredients;
+    private List<ICraftingTree> ingredients;
     private Map<String, Integer> tool_registry;
 
     public CraftingTree(ILocalizationRegistry localization_registry,
@@ -46,7 +43,7 @@ public class CraftingTree {
         this.tool_registry = registry.getTools();
         this.start_date = start_date;
 
-        this.ingredients = new HashMap<String, CraftingTree>();
+        this.ingredients = new ArrayList<ICraftingTree>();
         this.excess = false;
     }
 
@@ -116,18 +113,53 @@ public class CraftingTree {
             Integer items_required = 1;
             String ingredient_domain = "";
             String ingredient_name = "";
+            String fully_qualified_name = String.format("%s:%s", ingredient_domain, ingredient_name);
+            ICraftingTree crafting_tree;
 
             if (ingredient.getKey() instanceof ItemStack)
             {
+                ingredient_domain = Utilities.getModId(((ItemStack)ingredient.getKey()).getItem());
+                ingredient_name = this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey());
+
+                Integer new_tool_durability;
+                Integer used_tool_durability;
+
+                // Is the ingredient a tool that takes durability?
+                if ((new_tool_durability = this.tool_registry.get(fully_qualified_name)) != null)
+                {
+                    Integer temp_bundles = bundles;
+
+                    // If the tool has already been made and has more than enough durability we'll use it first
+                    if ((used_tool_durability = this.tools_in_use.get(fully_qualified_name)) != null)
+                    {
+                        // If there's not enough or just enough durability we'll use up the tool first
+                        if (used_tool_durability <= temp_bundles)
+                        {
+                            temp_bundles -= used_tool_durability;
+                            this.tools_in_use.remove(fully_qualified_name);
+
+                            crafting_tree = new UsedToolCraftingTree();
+                            crafting_tree.craft(ingredient_domain, ingredient_name, 1);
+
+                            this.ingredients.add(crafting_tree);
+                        }
+
+                        // If we still need to make more
+                        if (temp_bundles > 0)
+                        {
+                            items_required = (int)Math.ceil(temp_bundles / new_tool_durability);
+                            used_tool_durability = (items_required * new_tool_durability) - temp_bundles;
+
+                            this.tools_in_use.put(fully_qualified_name, used_tool_durability);
+                        }
+                    }
+                }
                 // If the ingredient is a by-product we'll only need the ingredient count for all the crafting
                 // steps since the ingredient can be reused
-                if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue())
+                else if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue())
                     items_required = ingredient.getValue();
                 else
                     items_required = ingredient.getValue() * bundles;
-
-                ingredient_domain = Utilities.getModId(((ItemStack)ingredient.getKey()).getItem());
-                ingredient_name = this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey());
             }
             else if (ingredient.getKey() instanceof List)
             {
@@ -145,10 +177,10 @@ public class CraftingTree {
                 continue;
             }
 
-            CraftingTree crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items, this.tools_in_use, this.start_date);
-            crafting_tree.craft(this.result_domain, ingredient_name, items_required);
+            crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items, this.tools_in_use, this.start_date);
+            crafting_tree.craft(ingredient_domain, ingredient_name, items_required);
 
-            this.ingredients.put(ingredient_domain + ":" + ingredient_name, crafting_tree);
+            this.ingredients.add(crafting_tree);
         }
     }
 
@@ -163,7 +195,7 @@ public class CraftingTree {
     }
 
     public String getResult() {
-        return this.result;
+        return String.format("%s:%s", this.result_domain, this.result);
     }
 
     public Integer getAmount() {
@@ -174,7 +206,7 @@ public class CraftingTree {
         return this.excess;
     }
 
-    public Map<String, CraftingTree> getIngredients() {
+    public List<ICraftingTree> getIngredients() {
         return this.ingredients;
     }
 
