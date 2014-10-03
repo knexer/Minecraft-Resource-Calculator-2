@@ -11,11 +11,10 @@ import untouchedwagons.minecraft.mcrc2.registry.Item;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
 import java.util.*;
-import java.util.regex.Matcher;
 
 public class CraftingTree implements ICraftingTree {
     private Map<String, Integer> tools_in_use;
-    private Date start_date;
+    private long start_time;
     private ILocalizationRegistry localization_registry;
     private String result_domain;
     private String result;
@@ -30,31 +29,32 @@ public class CraftingTree implements ICraftingTree {
     private List<ICraftingTree> ingredients;
     private Map<String, Integer> tool_registry;
 
-    public CraftingTree(ILocalizationRegistry localization_registry,
-                        GameRegistry registry,
+    public CraftingTree(GameRegistry game_registry,
                         Map<String, Integer> excess_items,
                         Map<String, Integer> tools_in_use,
-                        Date start_date) {
-        this.localization_registry = localization_registry;
-        this.registry = registry;
-        this.selected_recipes = registry.getSelectedRecipes();
+                        long start_time) {
+        this.localization_registry = game_registry.getLocalizationRegistry();
+        this.registry = game_registry;
+        this.selected_recipes = game_registry.getSelectedRecipes();
         this.excess_items = excess_items;
         this.tools_in_use = tools_in_use;
-        this.tool_registry = registry.getTools();
-        this.start_date = start_date;
+        this.tool_registry = game_registry.getTools();
+        this.start_time = start_time;
 
         this.ingredients = new ArrayList<ICraftingTree>();
         this.excess = false;
     }
 
     public void craft(String domain, String item, Integer amount) throws InfiniteRecursionException {
+        System.out.println("Beginning to craft");
+
         this.result_domain = domain;
         this.result = item;
         this.amount = amount;
 
         // If 5 seconds have passed since starting, we bail since we're probably stuck
         // in an infinite loop
-        if(new Date().getTime() - this.start_date.getTime() > 5000)
+        if(System.currentTimeMillis() - this.start_time > 5000)
             throw new InfiniteRecursionException();
 
         MinecraftMod mod = this.registry.getMod(this.result_domain);
@@ -177,7 +177,7 @@ public class CraftingTree implements ICraftingTree {
                 continue;
             }
 
-            crafting_tree = new CraftingTree(this.localization_registry, this.registry, this.excess_items, this.tools_in_use, this.start_date);
+            crafting_tree = new CraftingTree(this.registry, this.excess_items, this.tools_in_use, this.start_time);
             crafting_tree.craft(ingredient_domain, ingredient_name, items_required);
 
             this.ingredients.add(crafting_tree);

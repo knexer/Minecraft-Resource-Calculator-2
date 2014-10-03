@@ -280,6 +280,10 @@ public class GameRegistry {
         }
     }
 
+    public ILocalizationRegistry getLocalizationRegistry() {
+        return this.registry;
+    }
+
     public Map<String, MinecraftMod> getMods() {
         return mods;
     }
