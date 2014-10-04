@@ -33,6 +33,11 @@ public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrap
     }
 
     @Override
+    public boolean shouldActivateService() {
+        return true;
+    }
+
+    @Override
     public Map<ItemStack, Integer> getTools() {
         return null;
     }

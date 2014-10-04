@@ -178,6 +178,9 @@ public class GameRegistry {
 
         for (IModSupportService service : ServiceLoader.load(IModSupportService.class))
         {
+            if (!service.shouldActivateService())
+                continue;
+
             service.setLocalizationRegistry(this.registry);
             service.setRecipeWrapperRepository(this.wrapper_providers);
 

@@ -46,8 +46,6 @@ public class CraftingTree implements ICraftingTree {
     }
 
     public void craft(String domain, String item, Integer amount) throws InfiniteRecursionException {
-        System.out.println("Beginning to craft");
-
         this.result_domain = domain;
         this.result = item;
         this.amount = amount;

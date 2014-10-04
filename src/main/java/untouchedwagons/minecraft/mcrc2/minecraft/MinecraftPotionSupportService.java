@@ -35,6 +35,11 @@ public class MinecraftPotionSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
+    public boolean shouldActivateService() {
+        return true;
+    }
+
+    @Override
     public Map<ItemStack, Integer> getTools() {
         return null;
     }

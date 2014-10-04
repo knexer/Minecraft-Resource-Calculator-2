@@ -28,6 +28,11 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
     }
 
     @Override
+    public boolean shouldActivateService() {
+        return true;
+    }
+
+    @Override
     public Map<ItemStack, Integer> getTools() {
         return null;
     }

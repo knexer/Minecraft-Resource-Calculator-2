@@ -6,12 +6,7 @@ var current_crafting_tree;
 
 function get_item_namespace(item)
 {
-    var namespace = item.substr(0, item.indexOf(":"));
-
-    if (namespace == "")
-        namespace = "mc";
-
-    return namespace;
+    return item.substr(0, item.indexOf(":"));
 }
 
 function get_mod_list ()
@@ -38,7 +33,7 @@ function get_mod_list ()
 
 function get_item_list (mod_to_load)
 {
-    if (mod_data[mod_to_load]["items"])
+    if (mod_data[mod_to_load]["items"].length)
         return mod_data[mod_to_load]["items"];
 
     $.ajax({
@@ -47,7 +42,13 @@ function get_item_list (mod_to_load)
         dataType : "json",
         async: false,
         success: function(obj) {
-            mod_data[mod_to_load]["items"] = obj;
+            $.each (obj, function (unlocalized_name, localized_name)
+            {
+                mod_data[mod_to_load]["items"][unlocalized_name] = {
+                    id: unlocalized_name,
+                    name: localized_name
+                };
+            });
         },
         statusCode: {
             503: function() {
@@ -66,7 +67,8 @@ function initialize_mod_data(data)
     $.each (data, function (mod_id, mod_name)
     {
         mod_data[mod_id] = {
-            name: mod_name
+            name: mod_name,
+            items: {}
         };
     });
 }
@@ -165,7 +167,7 @@ function display_item_list (mod_to_load)
 {
     var mod_item_list = get_item_list(mod_to_load);
 
-    var item_list_select = $("<select>", { id: "item-list" });
+    var item_list_select = $("#item-list").empty();
     var items_list = [];
 
     $.each(mod_item_list, function (item, data) {
@@ -180,18 +182,9 @@ function display_item_list (mod_to_load)
         return 0;
     });
 
-    var item_list_inputs = [];
     $.each(items_list, function (pos, item_data) {
-        item_list_inputs.push($("<option>", { value: item_data["id"] }).append(item_data["name"]));
+        item_list_select.append($("<option>", { value: item_data["id"] }).append(item_data["name"]));
     });
-
-    var parent_container = $("#item-list").parent("").empty();
-    item_list_select.append(item_list_inputs);
-    parent_container.append(item_list_select);
-
-    item_list_select.chosen({width: "30%"}).on('change', function(){
-        //process_craft();
-    }).change();
 }
 
 function display_crafting_tree (crafting_tree, container)
@@ -202,7 +195,7 @@ function display_crafting_tree (crafting_tree, container)
     var item = crafting_tree['item'];
     var item_ns = get_item_namespace(item);
     var item_list = get_item_list(item_ns);
-    var item_text = item_list[item] + " X " + crafting_tree['amount'];
+    var item_text = item_list[item]['name'] + " X " + crafting_tree['amount'];
     var recipe_count = crafting_tree['recipe-count'];
 
     // Base items would have a recipe_count of 0
@@ -311,35 +304,19 @@ function display_summary (base_items_needed)
 $(document).ready(function() {
     $("#tabs").tabs();
 
-    $.cookie.json = true;
+    //$.cookie.json = true;
 
-    var mod_list = get_mod_list();
-
-    initialize_mod_data(mod_list);
-
-    var item_list = get_item_list("minecraft");
-
-    mod_data["minecraft"]["items"] = {};
-
-    $.each (item_list, function (unlocalized_name, localized_name)
-    {
-        mod_data["minecraft"]["items"][unlocalized_name] = {
-            id: unlocalized_name,
-            name: localized_name
-        };
-    });
-
+    initialize_mod_data(get_mod_list());
     display_mod_list();
+    display_item_list("minecraft");
 
-    $("#mod-list").chosen({
-        width: "30%"
-    }).change(function () {
-        display_item_list($(this).children("option:selected").val());
+    $("#mod-list").change(function()
+    {
+        display_item_list($("#mod-list").val());
     }).change();
 
-    $("#amount").spinner({
-        //stop: process_craft
-    });
-
-    $("a.ui-spinner-button").removeClass("ui-state-default");
+    $("#item-list").change(function()
+    {
+        process_craft();
+    }).change();
 });

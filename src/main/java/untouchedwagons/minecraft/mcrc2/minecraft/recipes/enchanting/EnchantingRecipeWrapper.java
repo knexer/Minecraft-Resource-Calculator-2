@@ -31,6 +31,11 @@ public class EnchantingRecipeWrapper extends RecipeWrapper {
         return new ItemStackWrapper(((EnchantingRecipe)this.getRecipe()).getRecipeOutput(), this.getRegistry());
     }
 
+    @Override
+    public boolean usesSpecialMachine() {
+        return true;
+    }
+
     /**
      * Template method that concrete classes can override,
      * gets the machine needed to perform this recipe
@@ -39,6 +44,6 @@ public class EnchantingRecipeWrapper extends RecipeWrapper {
     @Override
     public String getMachine()
     {
-        return "enchanting-table";
+        return "Enchanting Table";
     }
 }

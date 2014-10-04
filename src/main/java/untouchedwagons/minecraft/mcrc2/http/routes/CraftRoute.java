@@ -1,10 +1,12 @@
 package untouchedwagons.minecraft.mcrc2.http.routes;
 
+import com.google.gson.JsonObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.crafting.CraftingTree;
+import untouchedwagons.minecraft.mcrc2.crafting.views.CraftingTreeView;
 import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
@@ -45,20 +47,25 @@ public class CraftRoute implements RouteHandler {
                     System.currentTimeMillis());
             crafting_tree.craft(item_domain, item_name, item_amount);
 
-            System.out.println("Done crafting");
+            CraftingTreeView crafting_view = new CraftingTreeView();
+            crafting_view.process(crafting_tree);
+
+            JsonObject view_obj = crafting_view.getJsonObject();
+
+            ByteBuf content = ctx.alloc().buffer();
+            content.writeBytes(view_obj.toString().getBytes());
+
+            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
+
+            res.headers().set(CONTENT_TYPE, String.format("text/html; charset=UTF-8"));
+            HttpHeaders.setContentLength(res, content.readableBytes());
+
+            return res;
         } catch (InfiniteRecursionException e) {
             return new DefaultFullHttpResponse(HTTP_1_1, new HttpResponseStatus(508, "Loop Detected"));
         } catch (Exception e) {
             e.printStackTrace();
             return new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
         }
-
-        ByteBuf content = ctx.alloc().buffer();
-        FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
-
-        res.headers().set(CONTENT_TYPE, String.format("text/html; charset=UTF-8"));
-        HttpHeaders.setContentLength(res, content.readableBytes());
-
-        return res;
     }
 }

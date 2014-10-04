@@ -30,8 +30,13 @@ public class FurnaceRecipeWrapper extends RecipeWrapper {
         return new ItemStackWrapper(((FurnaceRecipe)this.getRecipe()).getRecipeOutput(), this.getRegistry());
     }
 
+    @Override
+    public boolean usesSpecialMachine() {
+        return true;
+    }
+
     public String getMachine()
     {
-        return "furnace";
+        return "Furnace";
     }
 }

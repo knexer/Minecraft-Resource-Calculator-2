@@ -30,8 +30,13 @@ public class PotionRecipeWrapper extends RecipeWrapper {
     }
 
     @Override
+    public boolean usesSpecialMachine() {
+        return true;
+    }
+
+    @Override
     public String getMachine()
     {
-        return "brewing-stand";
+        return "Brewing Stand";
     }
 }
