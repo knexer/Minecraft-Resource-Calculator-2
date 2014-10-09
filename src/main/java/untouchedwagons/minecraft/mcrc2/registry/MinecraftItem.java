@@ -5,12 +5,12 @@ import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item {
+public class MinecraftItem {
     private final String localized_name;
     private final String unlocalized_name;
     private final List<RecipeWrapper> recipes;
 
-    public Item(String unlocalized_name, String localized_name) {
+    public MinecraftItem(String unlocalized_name, String localized_name) {
         this.unlocalized_name = unlocalized_name;
         this.localized_name = localized_name;
 

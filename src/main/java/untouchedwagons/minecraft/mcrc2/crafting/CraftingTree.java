@@ -7,7 +7,7 @@ import untouchedwagons.minecraft.mcrc2.api.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
-import untouchedwagons.minecraft.mcrc2.registry.Item;
+import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
 import java.util.*;
@@ -56,7 +56,7 @@ public class CraftingTree implements ICraftingTree {
             throw new InfiniteRecursionException();
 
         MinecraftMod mod = this.registry.getMod(this.result_domain);
-        Item item_obj = mod.getItem(this.result);
+        MinecraftItem item_obj = mod.getItem(this.result);
         List<RecipeWrapper> recipes = item_obj.getRecipes();
 
         // No need to go any further if there's no recipes

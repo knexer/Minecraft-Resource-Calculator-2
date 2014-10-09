@@ -69,7 +69,7 @@ public class GameRegistry {
 
             // Add the OreDict list to forge's list of items. We'll use the localized name of the first item in the
             // list as the item's name
-            forge.getItems().put(oredict_name, new Item(oredict_name, this.registry.getLocalizedName(first_item)));
+            forge.getItems().put(oredict_name, new MinecraftItem(oredict_name, this.registry.getLocalizedName(first_item)));
 
             this.oredict_reverse_lookup.put(oredict_items, oredict_name);
         }
@@ -140,7 +140,7 @@ public class GameRegistry {
 
                 mod.getItems()
                         .put(unlocalized_name,
-                                new Item(unlocalized_name, localized_name));
+                                new MinecraftItem(unlocalized_name, localized_name));
 
             }
             catch (Exception n)
@@ -162,7 +162,7 @@ public class GameRegistry {
 
             forge_mod.getItems().put(
                     fluid_entry.getKey(),
-                    new Item(
+                    new MinecraftItem(
                             fluid.getUnlocalizedName(),
                             fluid.getLocalizedName(
                                     new FluidStack(fluid, 0)

@@ -2,7 +2,7 @@ package untouchedwagons.minecraft.mcrc2.views.debugging;
 
 import com.google.gson.JsonObject;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
-import untouchedwagons.minecraft.mcrc2.registry.Item;
+import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 import untouchedwagons.minecraft.mcrc2.views.IView;
 
@@ -23,7 +23,7 @@ public class ModView implements IView<MinecraftMod> {
 
         this.json_object.add("items", items_object);
 
-        for(Map.Entry<String, Item> item : mod.getItems().entrySet())
+        for(Map.Entry<String, MinecraftItem> item : mod.getItems().entrySet())
         {
             ItemView item_view = new ItemView(this.game_registry);
             item_view.process(item.getValue());

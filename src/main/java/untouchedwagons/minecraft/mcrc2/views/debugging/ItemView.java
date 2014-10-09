@@ -5,10 +5,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
-import untouchedwagons.minecraft.mcrc2.registry.Item;
+import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
 import untouchedwagons.minecraft.mcrc2.views.IView;
 
-public class ItemView implements IView<Item> {
+public class ItemView implements IView<MinecraftItem> {
     private final GameRegistry game_registry;
     private JsonObject json_object = new JsonObject();
 
@@ -17,7 +17,7 @@ public class ItemView implements IView<Item> {
     }
 
     @Override
-    public void process(Item item) {
+    public void process(MinecraftItem item) {
         this.json_object.add("localized-name", new JsonPrimitive(item.getLocalized_name()));
 
         JsonArray recipes = new JsonArray();

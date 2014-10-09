@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
-import untouchedwagons.minecraft.mcrc2.registry.Item;
+import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
 import java.util.Map;
@@ -60,7 +60,7 @@ public class ModItemListRoute implements RouteHandler {
         JsonObject item_list_object = new JsonObject();
         MinecraftMod mod = this.game_registry.getMods().get(mod_id);
 
-        for (Map.Entry<String, Item> entry : mod.getItems().entrySet())
+        for (Map.Entry<String, MinecraftItem> entry : mod.getItems().entrySet())
         {
             item_list_object.add(
                     String.format("%s:%s", mod_id, entry.getKey()),
