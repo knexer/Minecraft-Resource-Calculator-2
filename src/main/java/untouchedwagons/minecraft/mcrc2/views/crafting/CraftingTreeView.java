@@ -1,12 +1,13 @@
-package untouchedwagons.minecraft.mcrc2.crafting.views;
+package untouchedwagons.minecraft.mcrc2.views.crafting;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import untouchedwagons.minecraft.mcrc2.crafting.ICraftingTree;
 import untouchedwagons.minecraft.mcrc2.crafting.UsedToolCraftingTree;
+import untouchedwagons.minecraft.mcrc2.views.IView;
 
-public class CraftingTreeView {
+public class CraftingTreeView implements IView<ICraftingTree> {
     private JsonObject json_object = new JsonObject();
 
     public void process(ICraftingTree tree_node)

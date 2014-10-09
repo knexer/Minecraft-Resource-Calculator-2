@@ -1,10 +1,11 @@
-package untouchedwagons.minecraft.mcrc2.crafting.views;
+package untouchedwagons.minecraft.mcrc2.views.crafting;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
+import untouchedwagons.minecraft.mcrc2.views.IView;
 
-public class RecipeView {
+public class RecipeView implements IView<RecipeWrapper> {
     private JsonObject json_object = new JsonObject();
 
     public void process(RecipeWrapper recipe)

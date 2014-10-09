@@ -4,14 +4,12 @@ import com.google.gson.JsonObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.crafting.CraftingTree;
-import untouchedwagons.minecraft.mcrc2.crafting.views.CraftingTreeView;
+import untouchedwagons.minecraft.mcrc2.views.crafting.CraftingTreeView;
 import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
