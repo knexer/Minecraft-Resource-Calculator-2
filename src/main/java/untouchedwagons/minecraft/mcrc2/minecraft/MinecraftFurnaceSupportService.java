@@ -6,7 +6,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
-import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.furnace.FurnaceRecipeList;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.furnace.FurnaceRecipeWrapper;
 
@@ -30,11 +29,6 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
     @Override
     public boolean shouldActivateService() {
         return true;
-    }
-
-    @Override
-    public Map<ItemStack, Integer> getTools() {
-        return null;
     }
 
     @Override

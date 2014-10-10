@@ -91,11 +91,6 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public Map<ItemStack, Integer> getTools() {
-        return null;
-    }
-
-    @Override
     public Iterator<RecipeWrapper> iterator() {
         return this;
     }

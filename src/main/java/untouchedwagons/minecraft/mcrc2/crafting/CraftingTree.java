@@ -4,6 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
+import untouchedwagons.minecraft.mcrc2.api.recipes.ingredients.GenericTool;
 import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
@@ -24,7 +25,6 @@ public class CraftingTree implements ICraftingTree {
     private Map<Item, String> item_id_lookup;
     private Map<String, Integer> selected_recipes;
     private List<ICraftingTree> ingredients;
-    private Map<String, Integer> tool_registry;
 
     public CraftingTree(GameRegistry game_registry,
                         Map<String, Integer> excess_items,
@@ -36,7 +36,6 @@ public class CraftingTree implements ICraftingTree {
         this.selected_recipes = game_registry.getSelectedRecipes();
         this.excess_items = excess_items;
         this.tools_in_use = tools_in_use;
-        this.tool_registry = game_registry.getTools();
         this.start_time = start_time;
 
         this.ingredients = new ArrayList<ICraftingTree>();
@@ -120,42 +119,9 @@ public class CraftingTree implements ICraftingTree {
                 if (ingredient_is.getHasSubtypes())
                     ingredient_name += String.format(":%d", ingredient_is.getItemDamage());
 
-                Integer new_tool_durability;
-                Integer used_tool_durability;
-
-                // Is the ingredient a tool that takes durability?
-                if ((new_tool_durability = this.tool_registry.get(ingredient_name)) != null)
-                {
-                    Integer temp_bundles = bundles;
-
-                    // If the tool has already been made and has more than enough durability we'll use it first
-                    if ((used_tool_durability = this.tools_in_use.get(ingredient_name)) != null)
-                    {
-                        // If there's not enough or just enough durability we'll use up the tool first
-                        if (used_tool_durability <= temp_bundles)
-                        {
-                            temp_bundles -= used_tool_durability;
-                            this.tools_in_use.remove(ingredient_name);
-
-                            crafting_tree = new UsedToolCraftingTree();
-                            crafting_tree.craft(ingredient_name, 1);
-
-                            this.ingredients.add(crafting_tree);
-                        }
-
-                        // If we still need to make more
-                        if (temp_bundles > 0)
-                        {
-                            items_required = (int)Math.ceil(temp_bundles / new_tool_durability);
-                            used_tool_durability = (items_required * new_tool_durability) - temp_bundles;
-
-                            this.tools_in_use.put(ingredient_name, used_tool_durability);
-                        }
-                    }
-                }
                 // If the ingredient is a by-product we'll only need the ingredient count for all the crafting
                 // steps since the ingredient can be reused
-                else if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue())
+                if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue())
                     items_required = ingredient.getValue();
                 else
                     items_required = ingredient.getValue() * bundles;
@@ -167,6 +133,44 @@ public class CraftingTree implements ICraftingTree {
             else if (ingredient.getKey() instanceof FluidStack)
             {
                 ingredient_name = "Forge:" + ((FluidStack)ingredient.getKey()).getUnlocalizedName();
+            }
+            else if (ingredient.getKey() instanceof GenericTool)
+            {
+                GenericTool tool = (GenericTool) ingredient.getKey();
+                ingredient_name = tool.getId();
+
+                Integer new_tool_durability = tool.getDurability();
+                Integer used_tool_durability;
+                Integer temp_bundles = bundles;
+
+                // If the tool has already been made and has more than enough durability we'll use it first
+                if ((used_tool_durability = this.tools_in_use.get(ingredient_name)) != null)
+                {
+                    // If there's not enough or just enough durability we'll use up the tool first
+                    if (used_tool_durability <= temp_bundles)
+                    {
+                        temp_bundles -= used_tool_durability;
+                        this.tools_in_use.remove(ingredient_name);
+
+                        crafting_tree = new UsedToolCraftingTree();
+                        crafting_tree.craft(ingredient_name, 1);
+
+                        this.ingredients.add(crafting_tree);
+                    }
+
+                    // If we still need to make more
+                    if (temp_bundles > 0)
+                    {
+                        items_required = (int)Math.ceil(temp_bundles / new_tool_durability);
+                        used_tool_durability = (items_required * new_tool_durability) - temp_bundles;
+
+                        this.tools_in_use.put(ingredient_name, used_tool_durability);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
             }
             else
             {

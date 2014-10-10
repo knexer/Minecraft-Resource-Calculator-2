@@ -31,7 +31,6 @@ public class GameRegistry {
     private final Map<Class, List<RecipeFilter>> recipe_filters;
     private final List<IModSupportService> support_services;
     private final Map<String, Integer> selected_recipes;
-    private final Map<String, Integer> tools;
     private final Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers;
 
     private boolean ready;
@@ -46,7 +45,6 @@ public class GameRegistry {
         this.recipe_filters = new HashMap<Class, List<RecipeFilter>>();
         this.selected_recipes = new HashMap<String, Integer>();
         this.support_services = new ArrayList<IModSupportService>();
-        this.tools = new HashMap<String, Integer>();
         this.wrapper_providers = new HashMap<Class<? extends IRecipe>, Class<? extends RecipeWrapper>>();
 
         this.ready = false;
@@ -160,9 +158,6 @@ public class GameRegistry {
 
     public void collectRecipeProviders()
     {
-        Map<ItemStack, Integer> tools;
-        String unlocalized_name;
-
         for (IModSupportService service : ServiceLoader.load(IModSupportService.class))
         {
             if (!service.shouldActivateService())
@@ -170,18 +165,6 @@ public class GameRegistry {
 
             service.setItemIdReverseLookup(this.item_id_reverse_lookup);
             service.setRecipeWrapperRepository(this.wrapper_providers);
-
-            tools = service.getTools();
-
-            if (tools != null)
-            {
-                for (Map.Entry<ItemStack, Integer> tool : tools.entrySet())
-                {
-                    unlocalized_name = this.item_id_reverse_lookup.get(tool.getKey().getItem());
-
-                    this.tools.put(unlocalized_name, tool.getValue());
-                }
-            }
 
             this.support_services.add(service);
         }
@@ -278,8 +261,6 @@ public class GameRegistry {
     public HashMap<List, String> getOredictReverseLookup() { return oredict_reverse_lookup; }
 
     public Map<String, Integer> getSelectedRecipes() { return selected_recipes; }
-
-    public Map<String, Integer> getTools() { return tools; }
 
     public void markAsReady(boolean b) {
         this.ready = b;

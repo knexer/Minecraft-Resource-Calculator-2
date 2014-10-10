@@ -37,11 +37,6 @@ public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrap
     }
 
     @Override
-    public Map<ItemStack, Integer> getTools() {
-        return null;
-    }
-
-    @Override
     public Iterator<RecipeWrapper> iterator() {
         return this;
     }

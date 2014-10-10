@@ -38,11 +38,6 @@ public class MinecraftPotionSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public Map<ItemStack, Integer> getTools() {
-        return null;
-    }
-
-    @Override
     public Iterator<RecipeWrapper> iterator() {
         this.pos = 0;
         return this;
