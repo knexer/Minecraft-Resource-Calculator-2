@@ -21,7 +21,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class CraftRoute implements RouteHandler {
     private final GameRegistry game_registry;
 
-    public static final Pattern CraftRegex = Pattern.compile("^/craft/(\\w+):(.+)/(\\d+)$");
+    public static final Pattern CraftRegex = Pattern.compile("^/craft/(.+)/(\\d+)$");
 
     public CraftRoute(GameRegistry game_registry) {
         this.game_registry = game_registry;
@@ -34,16 +34,15 @@ public class CraftRoute implements RouteHandler {
         if (!matcher.find())
             return new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST);
 
-        String item_domain = matcher.group(1);
-        String item_name = matcher.group(2);
-        Integer item_amount = Integer.parseInt(matcher.group(3));
+        String item_name = matcher.group(1);
+        Integer item_amount = Integer.parseInt(matcher.group(2));
 
         try {
             CraftingTree crafting_tree = new CraftingTree(this.game_registry,
                     new HashMap<String, Integer>(),
                     new HashMap<String, Integer>(),
                     System.currentTimeMillis());
-            crafting_tree.craft(item_domain, item_name, item_amount);
+            crafting_tree.craft(item_name, item_amount);
 
             CraftingTreeView crafting_view = new CraftingTreeView();
             crafting_view.process(crafting_tree);
@@ -55,7 +54,7 @@ public class CraftRoute implements RouteHandler {
 
             FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
 
-            res.headers().set(CONTENT_TYPE, String.format("text/html; charset=UTF-8"));
+            res.headers().set(CONTENT_TYPE, String.format("application/json; charset=UTF-8"));
             HttpHeaders.setContentLength(res, content.readableBytes());
 
             return res;

@@ -54,11 +54,11 @@ public class ClientProxy extends CommonProxy
         @Override
         public void run() {
             this.registry.collectMods();
+            this.registry.collectItems();
+            this.registry.collectOreDictRegistrations();
+            this.registry.collectFluids();
             this.registry.collectRecipeProviders();
             this.registry.collectRecipeFilters();
-            this.registry.collectOreDictRegistrations();
-            this.registry.collectModItems();
-            this.registry.collectFluids();
             this.registry.collectRecipes();
 
             this.registry.markAsReady(true);

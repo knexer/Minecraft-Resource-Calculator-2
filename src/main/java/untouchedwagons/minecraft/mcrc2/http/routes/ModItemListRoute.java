@@ -2,15 +2,14 @@ package untouchedwagons.minecraft.mcrc2.http.routes;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import cpw.mods.fml.common.Loader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
-import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,11 +34,13 @@ public class ModItemListRoute implements RouteHandler {
             return new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE);
 
         Matcher matcher = mod_regex.matcher(uri);
+
+        //noinspection ResultOfMethodCallIgnored
         matcher.find();
 
         String mod_id = matcher.group(1);
 
-        if (!this.game_registry.getMods().containsKey(mod_id))
+        if (!Loader.isModLoaded(mod_id))
             return new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
 
         String item_list = this.getItemListForMod(mod_id);
@@ -58,13 +59,14 @@ public class ModItemListRoute implements RouteHandler {
     private String getItemListForMod(String mod_id)
     {
         JsonObject item_list_object = new JsonObject();
-        MinecraftMod mod = this.game_registry.getMods().get(mod_id);
 
-        for (Map.Entry<String, MinecraftItem> entry : mod.getItems().entrySet())
+        for (MinecraftItem item : this.game_registry.getItems().values())
         {
+            if (!item.getOwningMod().equals(mod_id)) continue;
+
             item_list_object.add(
-                    String.format("%s:%s", mod_id, entry.getKey()),
-                    new JsonPrimitive(entry.getValue().getLocalized_name())
+                    item.getUnlocalizedName(),
+                    new JsonPrimitive(item.getLocalizedName())
             );
         }
 

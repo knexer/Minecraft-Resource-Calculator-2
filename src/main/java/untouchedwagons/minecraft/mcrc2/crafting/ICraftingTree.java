@@ -6,7 +6,7 @@ import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import java.util.List;
 
 public interface ICraftingTree {
-    public void craft(String domain, String item, Integer amount) throws InfiniteRecursionException;
+    public void craft(String item, Integer amount) throws InfiniteRecursionException;
 
     public String getResult();
 

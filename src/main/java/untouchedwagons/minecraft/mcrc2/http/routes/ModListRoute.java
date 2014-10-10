@@ -7,7 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
-import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
+
+import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -46,12 +47,12 @@ public class ModListRoute implements RouteHandler {
     {
         JsonObject mod_list_object = new JsonObject();
 
-        for (MinecraftMod mod : this.game_registry.getMods().values())
+        for (Map.Entry<String, String> mod : this.game_registry.getModNames().entrySet())
         {
-            if (mod.getItems().size() == 0)
+            if (this.game_registry.getModItemCounts().get(mod.getKey()) == 0)
                 continue;
 
-            mod_list_object.add(mod.getModID(), new JsonPrimitive(mod.getName()));
+            mod_list_object.add(mod.getKey(), new JsonPrimitive(mod.getValue()));
         }
 
         this.mod_list = mod_list_object.toString();

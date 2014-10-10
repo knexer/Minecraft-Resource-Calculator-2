@@ -1,8 +1,8 @@
 package untouchedwagons.minecraft.mcrc2.minecraft;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.enchanting.EnchantingRecipe;
@@ -13,18 +13,17 @@ import java.util.Map;
 
 public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private final RecipeWrapper[] recipes;
-    private ILocalizationRegistry registry;
 
     private int pos = 0;
+    private Map<Item, String> item_id_lookup;
 
     public MinecraftEnchantedBookSupportService() {
         this.recipes = new RecipeWrapper[1];
     }
 
     @Override
-    public void setLocalizationRegistry(ILocalizationRegistry registry) {
-        this.registry = registry;
-        this.createRecipes();
+    public void setItemIdReverseLookup(Map<Item, String> item_id_lookup) {
+        this.item_id_lookup = item_id_lookup;
     }
 
     @Override
@@ -64,6 +63,6 @@ public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrap
 
     private void createRecipes()
     {
-        this.recipes[0] = new EnchantingRecipeWrapper(new EnchantingRecipe(), this.registry);
+        this.recipes[0] = new EnchantingRecipeWrapper(new EnchantingRecipe(), this.item_id_lookup);
     }
 }

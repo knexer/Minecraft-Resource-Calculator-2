@@ -6,8 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
-import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
-import untouchedwagons.minecraft.mcrc2.views.debugging.ModView;
+import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
+import untouchedwagons.minecraft.mcrc2.views.debugging.ItemView;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -31,18 +31,18 @@ public class DebugRoute implements RouteHandler {
         if (!this.game_registry.isReady())
             return new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE);
 
-        JsonObject mods_object = new JsonObject();
+        JsonObject items_object = new JsonObject();
 
-        for (Map.Entry<String, MinecraftMod> mod_entry : this.game_registry.getMods().entrySet())
+        for(Map.Entry<String, MinecraftItem> item : this.game_registry.getItems().entrySet())
         {
-            ModView mod_view = new ModView(this.game_registry);
-            mod_view.process(mod_entry.getValue());
+            ItemView item_view = new ItemView(this.game_registry);
+            item_view.process(item.getValue());
 
-            mods_object.add(mod_entry.getKey(), mod_view.getJsonObject());
+            items_object.add(item.getKey(), item_view.getJsonObject());
         }
 
         ByteBuf content = ctx.alloc().buffer();
-        content.writeBytes(mods_object.toString().getBytes());
+        content.writeBytes(items_object.toString().getBytes());
 
         FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
 

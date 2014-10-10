@@ -18,7 +18,7 @@ public class ItemView implements IView<MinecraftItem> {
 
     @Override
     public void process(MinecraftItem item) {
-        this.json_object.add("localized-name", new JsonPrimitive(item.getLocalized_name()));
+        this.json_object.add("localized-name", new JsonPrimitive(item.getLocalizedName()));
 
         JsonArray recipes = new JsonArray();
 

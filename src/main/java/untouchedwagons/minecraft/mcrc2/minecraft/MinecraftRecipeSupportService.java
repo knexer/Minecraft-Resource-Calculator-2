@@ -1,5 +1,6 @@
 package untouchedwagons.minecraft.mcrc2.minecraft;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -7,7 +8,6 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.oredict.ShapedOreRecipeWrapper;
@@ -17,15 +17,13 @@ import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapelessRecip
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private final Iterator recipes_iterator;
     private Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers;
-    private ILocalizationRegistry registry;
+    private Map<Item, String> item_id_lookup;
 
     public MinecraftRecipeSupportService() {
         this.recipes_iterator = CraftingManager.getInstance().getRecipeList().iterator();
@@ -55,7 +53,7 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         }
 
         try {
-            return (RecipeWrapper) wrapper_constructor.newInstance(recipe, this.registry);
+            return (RecipeWrapper) wrapper_constructor.newInstance(recipe, this.item_id_lookup);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -73,8 +71,8 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
     }
 
     @Override
-    public void setLocalizationRegistry(ILocalizationRegistry registry) {
-        this.registry = registry;
+    public void setItemIdReverseLookup(Map<Item, String> item_id_lookup) {
+        this.item_id_lookup = item_id_lookup;
     }
 
     @Override
@@ -111,7 +109,7 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
             if (parameters.length != 2) continue;
 
             if (parameters[0] != IRecipe.class &&
-                parameters[1] != ILocalizationRegistry.class) continue;
+                parameters[1] != Map.class) continue;
 
             return constructor;
         }

@@ -1,9 +1,9 @@
 package untouchedwagons.minecraft.mcrc2.minecraft;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
-import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.exceptions.InvalidRecipeException;
@@ -15,11 +15,11 @@ import java.util.Map;
 
 public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private Iterator furnace_iterator;
-    private ILocalizationRegistry registry;
+    private Map<Item, String> item_id_lookup;
 
     @Override
-    public void setLocalizationRegistry(ILocalizationRegistry registry) {
-        this.registry = registry;
+    public void setItemIdReverseLookup(Map<Item, String> item_id_lookup) {
+        this.item_id_lookup = item_id_lookup;
     }
 
     @Override
@@ -52,14 +52,7 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
 
     @Override
     public RecipeWrapper next() {
-        RecipeWrapper wrapper;
-        try {
-            wrapper = new FurnaceRecipeWrapper((IRecipe)this.furnace_iterator.next(), this.registry);
-        } catch (InvalidRecipeException e) {
-            return null;
-        }
-
-        return wrapper;
+        return new FurnaceRecipeWrapper((IRecipe)this.furnace_iterator.next(), this.item_id_lookup);
     }
 
     @Override

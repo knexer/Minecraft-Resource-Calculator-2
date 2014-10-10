@@ -1,22 +1,18 @@
 package untouchedwagons.minecraft.mcrc2.crafting;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
-import untouchedwagons.minecraft.mcrc2.api.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
-import untouchedwagons.minecraft.mcrc2.registry.MinecraftMod;
 
 import java.util.*;
 
 public class CraftingTree implements ICraftingTree {
     private Map<String, Integer> tools_in_use;
     private long start_time;
-    private ILocalizationRegistry localization_registry;
-    private String result_domain;
     private String result;
     private Integer amount;
     private Boolean excess;
@@ -25,6 +21,7 @@ public class CraftingTree implements ICraftingTree {
     private Map<String, Integer> excess_items;
 
     private GameRegistry registry;
+    private Map<Item, String> item_id_lookup;
     private Map<String, Integer> selected_recipes;
     private List<ICraftingTree> ingredients;
     private Map<String, Integer> tool_registry;
@@ -33,8 +30,9 @@ public class CraftingTree implements ICraftingTree {
                         Map<String, Integer> excess_items,
                         Map<String, Integer> tools_in_use,
                         long start_time) {
-        this.localization_registry = game_registry.getLocalizationRegistry();
         this.registry = game_registry;
+
+        this.item_id_lookup = this.registry.getItemIdReverseLookup();
         this.selected_recipes = game_registry.getSelectedRecipes();
         this.excess_items = excess_items;
         this.tools_in_use = tools_in_use;
@@ -45,8 +43,7 @@ public class CraftingTree implements ICraftingTree {
         this.excess = false;
     }
 
-    public void craft(String domain, String item, Integer amount) throws InfiniteRecursionException {
-        this.result_domain = domain;
+    public void craft(String item, Integer amount) throws InfiniteRecursionException {
         this.result = item;
         this.amount = amount;
 
@@ -55,8 +52,7 @@ public class CraftingTree implements ICraftingTree {
         if(System.currentTimeMillis() - this.start_time > 5000)
             throw new InfiniteRecursionException();
 
-        MinecraftMod mod = this.registry.getMod(this.result_domain);
-        MinecraftItem item_obj = mod.getItem(this.result);
+        MinecraftItem item_obj = this.registry.getItems().get(item);
         List<RecipeWrapper> recipes = item_obj.getRecipes();
 
         // No need to go any further if there's no recipes
@@ -101,7 +97,10 @@ public class CraftingTree implements ICraftingTree {
         // For example, an empty bucket when making cake
         for (Map.Entry<ItemStack, Integer> by_product : this.recipe.getByProducts().entrySet())
         {
-            String by_product_name = this.localization_registry.getLocalizedName(by_product.getKey());
+            String by_product_name = this.item_id_lookup.get(by_product.getKey().getItem());
+
+            if (by_product.getKey().getHasSubtypes())
+                by_product_name += String.format(":%d", by_product.getKey().getItemDamage());
 
             this.handleExcess(by_product_name, by_product.getValue());
         }
@@ -109,35 +108,37 @@ public class CraftingTree implements ICraftingTree {
         for (Map.Entry<Object, Integer> ingredient : this.recipe.getIngredients().entrySet())
         {
             Integer items_required = 1;
-            String ingredient_domain = "";
             String ingredient_name = "";
-            String fully_qualified_name = String.format("%s:%s", ingredient_domain, ingredient_name);
             ICraftingTree crafting_tree;
 
             if (ingredient.getKey() instanceof ItemStack)
             {
-                ingredient_domain = Utilities.getModId(((ItemStack)ingredient.getKey()).getItem());
-                ingredient_name = this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey());
+                ItemStack ingredient_is = (ItemStack) ingredient.getKey();
+
+                ingredient_name = this.registry.getItemIdReverseLookup().get(ingredient_is.getItem());
+
+                if (ingredient_is.getHasSubtypes())
+                    ingredient_name += String.format(":%d", ingredient_is.getItemDamage());
 
                 Integer new_tool_durability;
                 Integer used_tool_durability;
 
                 // Is the ingredient a tool that takes durability?
-                if ((new_tool_durability = this.tool_registry.get(fully_qualified_name)) != null)
+                if ((new_tool_durability = this.tool_registry.get(ingredient_name)) != null)
                 {
                     Integer temp_bundles = bundles;
 
                     // If the tool has already been made and has more than enough durability we'll use it first
-                    if ((used_tool_durability = this.tools_in_use.get(fully_qualified_name)) != null)
+                    if ((used_tool_durability = this.tools_in_use.get(ingredient_name)) != null)
                     {
                         // If there's not enough or just enough durability we'll use up the tool first
                         if (used_tool_durability <= temp_bundles)
                         {
                             temp_bundles -= used_tool_durability;
-                            this.tools_in_use.remove(fully_qualified_name);
+                            this.tools_in_use.remove(ingredient_name);
 
                             crafting_tree = new UsedToolCraftingTree();
-                            crafting_tree.craft(ingredient_domain, ingredient_name, 1);
+                            crafting_tree.craft(ingredient_name, 1);
 
                             this.ingredients.add(crafting_tree);
                         }
@@ -148,7 +149,7 @@ public class CraftingTree implements ICraftingTree {
                             items_required = (int)Math.ceil(temp_bundles / new_tool_durability);
                             used_tool_durability = (items_required * new_tool_durability) - temp_bundles;
 
-                            this.tools_in_use.put(fully_qualified_name, used_tool_durability);
+                            this.tools_in_use.put(ingredient_name, used_tool_durability);
                         }
                     }
                 }
@@ -161,13 +162,11 @@ public class CraftingTree implements ICraftingTree {
             }
             else if (ingredient.getKey() instanceof List)
             {
-                ingredient_domain = "Forge";
                 ingredient_name = this.registry.getOredictName((List) ingredient.getKey());
             }
             else if (ingredient.getKey() instanceof FluidStack)
             {
-                ingredient_domain = "Forge";
-                ingredient_name = ((FluidStack)ingredient.getKey()).getLocalizedName();
+                ingredient_name = "Forge:" + ((FluidStack)ingredient.getKey()).getUnlocalizedName();
             }
             else
             {
@@ -176,7 +175,7 @@ public class CraftingTree implements ICraftingTree {
             }
 
             crafting_tree = new CraftingTree(this.registry, this.excess_items, this.tools_in_use, this.start_time);
-            crafting_tree.craft(ingredient_domain, ingredient_name, items_required);
+            crafting_tree.craft(ingredient_name, items_required);
 
             this.ingredients.add(crafting_tree);
         }
@@ -193,7 +192,7 @@ public class CraftingTree implements ICraftingTree {
     }
 
     public String getResult() {
-        return String.format("%s:%s", this.result_domain, this.result);
+        return this.result;
     }
 
     public Integer getAmount() {

@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import untouchedwagons.minecraft.mcrc2.api.ILocalizationRegistry;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.views.IView;
@@ -15,13 +14,11 @@ import java.util.Map;
 public class RecipeView implements IView<RecipeWrapper>
 {
     private final GameRegistry game_registry;
-    private final ILocalizationRegistry localization_registry;
 
     private JsonObject json_object = new JsonObject();
 
     public RecipeView(GameRegistry game_registry) {
         this.game_registry = game_registry;
-        this.localization_registry = game_registry.getLocalizationRegistry();
     }
 
     @Override
@@ -40,7 +37,12 @@ public class RecipeView implements IView<RecipeWrapper>
         {
             if (ingredient.getKey() instanceof ItemStack)
             {
-                String unlocalized_name = this.localization_registry.getUnlocalizedName((ItemStack) ingredient.getKey());
+                ItemStack ingredient_is = (ItemStack)ingredient.getKey();
+
+                String unlocalized_name = this.game_registry.getItemIdReverseLookup().get(ingredient_is.getItem());
+
+                if (ingredient_is.getHasSubtypes())
+                    unlocalized_name += String.format(":%d", ingredient_is.getItemDamage());
 
                 ingredients.add(unlocalized_name, new JsonPrimitive(ingredient.getValue()));
             }

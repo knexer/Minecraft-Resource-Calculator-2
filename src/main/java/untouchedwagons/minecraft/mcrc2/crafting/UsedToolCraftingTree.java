@@ -6,20 +6,18 @@ import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
 import java.util.ArrayList;
 
 public class UsedToolCraftingTree implements ICraftingTree {
-    private String result_domain;
     private String result;
     private Integer amount;
 
     @Override
-    public void craft(String domain, String item, Integer amount) throws InfiniteRecursionException {
-        this.result_domain = domain;
+    public void craft(String item, Integer amount) throws InfiniteRecursionException {
         this.result = item;
         this.amount = amount;
     }
 
     @Override
     public String getResult() {
-        return String.format("%s:%s", this.result_domain, this.result);
+        return this.result;
     }
 
     @Override

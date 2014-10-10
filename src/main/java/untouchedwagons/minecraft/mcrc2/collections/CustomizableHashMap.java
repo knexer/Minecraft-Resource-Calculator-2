@@ -10,11 +10,6 @@ public class CustomizableHashMap<K, V> extends HashMap<K, V> {
         this.comparer = comparer;
     }
 
-    public Equatable getComparer()
-    {
-        return this.comparer;
-    }
-
     @Override
     public boolean containsKey(Object key)
     {
