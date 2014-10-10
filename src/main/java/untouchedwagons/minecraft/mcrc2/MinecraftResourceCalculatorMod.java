@@ -6,7 +6,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
 import untouchedwagons.minecraft.mcrc2.proxy.CommonProxy;
 
-@Mod(modid = "mcrc2", name = "Minecraft Resource Calculator 2", version = "0.5.0")
+@Mod(modid = "mcrc2", name = "Minecraft Resource Calculator 2", version = "0.6.0")
 public class MinecraftResourceCalculatorMod
 {
     @SidedProxy(clientSide = "untouchedwagons.minecraft.mcrc2.proxy.ClientProxy", serverSide = "untouchedwagons.minecraft.mcrc2.proxy.CommonProxy")
