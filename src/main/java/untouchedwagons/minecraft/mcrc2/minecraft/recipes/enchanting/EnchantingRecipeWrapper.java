@@ -1,5 +1,6 @@
 package untouchedwagons.minecraft.mcrc2.minecraft.recipes.enchanting;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -42,6 +43,7 @@ public class EnchantingRecipeWrapper extends RecipeWrapper {
     @Override
     public String getMachine()
     {
-        return "Enchanting Table";
+        ItemStack enchanting_table = new ItemStack(Blocks.enchanting_table);
+        return enchanting_table.getDisplayName();
     }
 }

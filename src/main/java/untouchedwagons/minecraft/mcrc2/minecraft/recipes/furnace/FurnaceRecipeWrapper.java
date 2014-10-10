@@ -1,5 +1,6 @@
 package untouchedwagons.minecraft.mcrc2.minecraft.recipes.furnace;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -36,6 +37,7 @@ public class FurnaceRecipeWrapper extends RecipeWrapper {
 
     public String getMachine()
     {
-        return "Furnace";
+        ItemStack furnace = new ItemStack(Blocks.furnace);
+        return furnace.getDisplayName();
     }
 }
