@@ -24,6 +24,8 @@ public class MinecraftEnchantedBookSupportService implements Iterator<RecipeWrap
     @Override
     public void setItemIdReverseLookup(Map<Item, String> item_id_lookup) {
         this.item_id_lookup = item_id_lookup;
+
+        this.createRecipes();
     }
 
     @Override

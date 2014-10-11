@@ -1,5 +1,6 @@
 package untouchedwagons.minecraft.mcrc2.registry;
 
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 
@@ -199,7 +200,7 @@ public class GameRegistry {
 
         for (IModSupportService support_service : this.support_services)
         {
-            for(RecipeWrapper wrapped_recipe : support_service) {
+            for (RecipeWrapper wrapped_recipe : support_service) {
                 try
                 {
                     if (wrapped_recipe == null)
@@ -225,13 +226,16 @@ public class GameRegistry {
 
                     unlocalized_name = result.getUnlocalizedName();
 
+                    FMLLog.info(unlocalized_name);
+
                     this.items.get(unlocalized_name)
                         .getRecipes()
                         .add(wrapped_recipe);
                 }
                 catch (Exception e)
                 {
-                    //
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
