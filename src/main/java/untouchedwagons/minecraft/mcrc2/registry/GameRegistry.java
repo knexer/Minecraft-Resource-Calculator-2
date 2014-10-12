@@ -226,8 +226,6 @@ public class GameRegistry {
 
                     unlocalized_name = result.getUnlocalizedName();
 
-                    FMLLog.info(unlocalized_name);
-
                     this.items.get(unlocalized_name)
                         .getRecipes()
                         .add(wrapped_recipe);

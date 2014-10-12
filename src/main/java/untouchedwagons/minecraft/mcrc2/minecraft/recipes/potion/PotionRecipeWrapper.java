@@ -1,6 +1,7 @@
 package untouchedwagons.minecraft.mcrc2.minecraft.recipes.potion;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -36,7 +37,7 @@ public class PotionRecipeWrapper extends RecipeWrapper {
     @Override
     public String getMachine()
     {
-        ItemStack brewing_stand = new ItemStack(Blocks.brewing_stand);
+        ItemStack brewing_stand = new ItemStack(Items.brewing_stand);
         return brewing_stand.getDisplayName();
     }
 }
