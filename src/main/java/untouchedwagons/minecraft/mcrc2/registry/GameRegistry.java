@@ -8,11 +8,13 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import net.minecraftforge.oredict.OreDictionary;
+import untouchedwagons.minecraft.mcrc2.MinecraftResourceCalculatorMod;
 import untouchedwagons.minecraft.mcrc2.PotionHelper;
 import untouchedwagons.minecraft.mcrc2.api.Utilities;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
@@ -99,36 +101,62 @@ public class GameRegistry {
                     PotionHelper.getSubItems(items);
                 else
                     item.getSubItems(item, null, items);
+
+                if (item.getHasSubtypes())
+                {
+                    items.add(new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE));
+                }
             }
             catch (Exception npe)
             {
                 // Extra Utilities' Microblocks are known to cause NullPointerExceptions. *Looks in RWTema's general direction*
                 // ChickenBones' Microblocks are known to cause NullPointerExceptions. *Looks in ChickenBones's general direction*
+                if (MinecraftResourceCalculatorMod.do_logging)
+                    npe.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
             }
         }
 
-        String unlocalized_name, owning_mod;
+        String itemstack_id, unlocalized_name, display_name, owning_mod;
 
         for (ItemStack is : items)
         {
             try {
-                unlocalized_name = this.item_id_reverse_lookup.get(is.getItem());
+                itemstack_id = this.item_id_reverse_lookup.get(is.getItem());
                 owning_mod = Utilities.getModId(is);
 
                 if (is.getHasSubtypes())
-                    unlocalized_name += String.format(":%d", is.getItemDamage());
+                    itemstack_id += String.format(":%d", is.getItemDamage());
+
+                if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+                    unlocalized_name = is.getUnlocalizedName() + ".wildcard.name";
+
+                    if (StatCollector.canTranslate(unlocalized_name)) {
+                        display_name = StatCollector.translateToLocal(unlocalized_name);
+                    }
+                    else {
+                        FMLLog.warning("Localization needed for '%s' from mod '%s'\n",
+                                unlocalized_name, Utilities.getModId(is));
+
+                        display_name = unlocalized_name;
+                    }
+                }
+                else {
+                    display_name = is.getDisplayName();
+                }
 
                 this.items
-                        .put(unlocalized_name,
-                                new MinecraftItem(unlocalized_name, is.getDisplayName(), owning_mod));
+                        .put(itemstack_id,
+                                new MinecraftItem(itemstack_id, display_name, owning_mod));
 
                 this.mod_item_counts.put(
                         owning_mod,
                         this.mod_item_counts.get(owning_mod) + 1);
             }
-            catch (Exception n)
+            catch (Exception e)
             {
                 // Forestry's research notes are known to cause NPEs when getting the localized name. *Looks in Sengir's general direction*
+                if (MinecraftResourceCalculatorMod.do_logging)
+                    e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
             }
         }
     }
@@ -232,8 +260,8 @@ public class GameRegistry {
                 }
                 catch (Exception e)
                 {
-                    System.out.println(e.getMessage());
-                    e.printStackTrace();
+                    if (MinecraftResourceCalculatorMod.do_logging)
+                        e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
                 }
             }
         }

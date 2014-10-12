@@ -6,6 +6,7 @@ import cpw.mods.fml.common.Loader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import net.minecraftforge.oredict.OreDictionary;
 import untouchedwagons.minecraft.mcrc2.http.routing.RouteHandler;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
 import untouchedwagons.minecraft.mcrc2.registry.MinecraftItem;
@@ -40,7 +41,7 @@ public class ModItemListRoute implements RouteHandler {
 
         String mod_id = matcher.group(1);
 
-        if (!Loader.isModLoaded(mod_id))
+        if (!Loader.isModLoaded(mod_id) && !mod_id.equals("minecraft"))
             return new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
 
         String item_list = this.getItemListForMod(mod_id);
@@ -63,6 +64,9 @@ public class ModItemListRoute implements RouteHandler {
         for (MinecraftItem item : this.game_registry.getItems().values())
         {
             if (!item.getOwningMod().equals(mod_id)) continue;
+
+            if (item.getUnlocalizedName().endsWith(":"+ OreDictionary.WILDCARD_VALUE))
+                continue;
 
             item_list_object.add(
                     item.getUnlocalizedName(),

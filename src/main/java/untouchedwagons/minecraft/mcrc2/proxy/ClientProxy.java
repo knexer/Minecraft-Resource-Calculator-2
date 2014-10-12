@@ -1,6 +1,7 @@
 package untouchedwagons.minecraft.mcrc2.proxy;
 
 import io.netty.handler.codec.http.HttpMethod;
+import untouchedwagons.minecraft.mcrc2.MinecraftResourceCalculatorMod;
 import untouchedwagons.minecraft.mcrc2.http.WebSocketServer;
 import untouchedwagons.minecraft.mcrc2.http.routes.*;
 import untouchedwagons.minecraft.mcrc2.registry.GameRegistry;
@@ -39,7 +40,8 @@ public class ClientProxy extends CommonProxy
         try {
             server.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (MinecraftResourceCalculatorMod.do_logging)
+                e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
         }
     }
 

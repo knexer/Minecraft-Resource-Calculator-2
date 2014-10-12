@@ -96,7 +96,7 @@ function process_craft ()
 
             if (crafting_tree["recipe-count"] == 0)
             {
-                details_elem.empty().append($("<p>").append("It seems this item has no recipes. Maybe the 'Item Uses' tab has something useful?"));
+                details_elem.empty().append($("<p>").append("It seems this item has no recipes."));
                 return;
             }
 
