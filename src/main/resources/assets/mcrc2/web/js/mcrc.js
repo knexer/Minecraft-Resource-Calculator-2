@@ -323,4 +323,9 @@ $(document).ready(function() {
     {
         process_craft();
     }).change();
+
+    $("#amount").change(function()
+    {
+        process_craft();
+    }).change();
 });

@@ -72,6 +72,13 @@ header section > ul li.nav-list-item label
     border-bottom:1px solid #aaaaaa;
 }
 
+
+header section > ul li.nav-list-item select,
+header section > ul li.nav-list-item input
+{
+    width: 30%;
+}
+
 footer section
 {
     background-color: white;
@@ -102,11 +109,6 @@ body > section
     min-width: 650px;
     width: 70%;
     margin: 0 auto 0 auto;
-}
-
-#amount
-{
-    width: 75px;
 }
 
 #tabs
