@@ -3,6 +3,7 @@ package untouchedwagons.minecraft.mcrc2.crafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import untouchedwagons.minecraft.mcrc2.MinecraftResourceCalculatorMod;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.api.recipes.ingredients.GenericTool;
 import untouchedwagons.minecraft.mcrc2.exceptions.InfiniteRecursionException;
@@ -106,7 +107,7 @@ public class CraftingTree implements ICraftingTree {
 
         for (Map.Entry<Object, Integer> ingredient : this.recipe.getIngredients().entrySet())
         {
-            Integer items_required = 1;
+            Integer items_required = ingredient.getValue() * bundles;
             String ingredient_name = "";
             ICraftingTree crafting_tree;
 
@@ -123,8 +124,6 @@ public class CraftingTree implements ICraftingTree {
                 // steps since the ingredient can be reused
                 if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue())
                     items_required = ingredient.getValue();
-                else
-                    items_required = ingredient.getValue() * bundles;
             }
             else if (ingredient.getKey() instanceof List)
             {
@@ -174,7 +173,11 @@ public class CraftingTree implements ICraftingTree {
             }
             else
             {
-                System.out.println("Found unknown ingredient type. Expected: ItemStack, List or FluidStack, got: " + ingredient.getKey().getClass());
+                if (MinecraftResourceCalculatorMod.do_logging)
+                    MinecraftResourceCalculatorMod.error_logger.println(
+                            String.format("Found unknown ingredient type. Expected: ItemStack, List or FluidStack, got: %s", ingredient.getKey().getClass())
+                    );
+
                 continue;
             }
 
