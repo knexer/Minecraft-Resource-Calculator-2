@@ -8,6 +8,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import untouchedwagons.minecraft.mcrc2.MinecraftResourceCalculatorMod;
 import untouchedwagons.minecraft.mcrc2.api.mods.IModSupportService;
 import untouchedwagons.minecraft.mcrc2.api.recipes.RecipeWrapper;
 import untouchedwagons.minecraft.mcrc2.minecraft.recipes.oredict.ShapedOreRecipeWrapper;
@@ -41,14 +42,22 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         Class<? extends RecipeWrapper> recipe_wrapper_class = this.wrapper_providers.get(recipe.getClass());
 
         if (recipe_wrapper_class == null) {
-            System.out.println("Warning: could not process recipe of type " + recipe.getClass());
+            if (MinecraftResourceCalculatorMod.do_logging)
+                MinecraftResourceCalculatorMod.error_logger.println(
+                        String.format("Warning: could not process recipe of type %s", recipe.getClass())
+                );
+
             return null;
         }
 
         Constructor wrapper_constructor = this.getConstructorForRecipeWrapper(recipe_wrapper_class);
 
         if (wrapper_constructor == null) {
-            System.out.println("Warning: could not find appropriate constructor for RecipeWrapper subclass: " + recipe_wrapper_class);
+            if (MinecraftResourceCalculatorMod.do_logging)
+                MinecraftResourceCalculatorMod.error_logger.println(
+                        String.format("Warning: could not find appropriate constructor for RecipeWrapper subclass: %s", recipe_wrapper_class)
+                );
+
             return null;
         }
 

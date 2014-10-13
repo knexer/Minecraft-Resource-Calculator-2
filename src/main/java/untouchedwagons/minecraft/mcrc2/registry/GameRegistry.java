@@ -61,7 +61,6 @@ public class GameRegistry {
 
         for (ModContainer mod : Loader.instance().getActiveModList())
         {
-            System.out.println(mod.getModId());
             this.mod_item_counts.put(mod.getModId(), 0);
             this.mod_names.put(mod.getModId(), mod.getName());
         }
@@ -69,21 +68,30 @@ public class GameRegistry {
 
     public void collectOreDictRegistrations()
     {
-        ItemStack first_item;
         List<ItemStack> oredict_items;
+        String ore_id, unlocalized_name, display_name;
 
         for (String oredict_name : OreDictionary.getOreNames())
         {
             oredict_items = OreDictionary.getOres(oredict_name);
-            first_item = oredict_items.get(0);
 
-            oredict_name = "Forge:" + oredict_name;
+            ore_id = "Forge:" + oredict_name;
+            unlocalized_name = "item.Forge." + oredict_name + ".name";
+
+            if (StatCollector.canTranslate(unlocalized_name)) {
+                display_name = StatCollector.translateToLocal(unlocalized_name);
+            } else {
+                if (MinecraftResourceCalculatorMod.do_logging)
+                    MinecraftResourceCalculatorMod.error_logger.println(String.format("Could not find localization for %s", unlocalized_name));
+
+                display_name = unlocalized_name;
+            }
 
             // Add the OreDict list to forge's list of items. We'll use the localized name of the first item in the
             // list as the item's name
-            this.items.put(oredict_name, new MinecraftItem(oredict_name, first_item.getDisplayName(), "Forge"));
+            this.items.put(ore_id, new MinecraftItem(ore_id, display_name, "Forge"));
 
-            this.oredict_reverse_lookup.put(oredict_items, oredict_name);
+            this.oredict_reverse_lookup.put(oredict_items, ore_id);
 
             this.mod_item_counts.put(
                     "Forge",
@@ -253,8 +261,14 @@ public class GameRegistry {
                         }
                     }
 
-                    if (filter_recipe)
+                    if (filter_recipe) {
+                        if (MinecraftResourceCalculatorMod.do_logging)
+                            MinecraftResourceCalculatorMod.error_logger.println(
+                                    String.format("Filtered recipe with result of %s", wrapped_recipe.getResult().getLocalizedName())
+                            );
+
                         continue;
+                    }
 
                     result = wrapped_recipe.getResult();
 
