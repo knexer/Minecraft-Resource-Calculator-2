@@ -18,16 +18,20 @@ import untouchedwagons.minecraft.mcrc2.minecraft.recipes.standard.ShapelessRecip
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, IModSupportService {
     private final Iterator recipes_iterator;
     private Map<Class<? extends IRecipe>, Class<? extends RecipeWrapper>> wrapper_providers;
     private Map<Item, String> item_id_lookup;
+    private List<Class<? extends IRecipe>> unknown_recipes;
 
     public MinecraftRecipeSupportService() {
         this.recipes_iterator = CraftingManager.getInstance().getRecipeList().iterator();
+        this.unknown_recipes = new ArrayList<Class<? extends IRecipe>>();
     }
 
     public boolean hasNext() {
@@ -39,6 +43,10 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
             return null;
 
         IRecipe recipe = (IRecipe)this.recipes_iterator.next();
+
+        if (this.unknown_recipes.contains(recipe.getClass()))
+            return null;
+
         Class<? extends RecipeWrapper> recipe_wrapper_class = this.wrapper_providers.get(recipe.getClass());
 
         if (recipe_wrapper_class == null) {
@@ -47,6 +55,7 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
                         String.format("Warning: could not process recipe of type %s", recipe.getClass())
                 );
 
+            this.unknown_recipes.add(recipe.getClass());
             return null;
         }
 
