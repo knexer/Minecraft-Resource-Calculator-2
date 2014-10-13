@@ -42,11 +42,12 @@ function get_item_list (mod_to_load)
         dataType : "json",
         async: false,
         success: function(obj) {
-            $.each (obj, function (unlocalized_name, localized_name)
+            $.each (obj, function (unlocalized_name, data)
             {
                 mod_data[mod_to_load]["items"][unlocalized_name] = {
                     id: unlocalized_name,
-                    name: localized_name
+                    name: data['name'],
+                    hidden: data['hidden']
                 };
             });
         },
@@ -171,6 +172,9 @@ function display_item_list (mod_to_load)
     var items_list = [];
 
     $.each(mod_item_list, function (item, data) {
+        if (data['hidden'])
+            return;
+
         items_list.push(data);
     });
 

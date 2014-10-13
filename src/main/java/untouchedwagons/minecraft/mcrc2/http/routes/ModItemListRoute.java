@@ -65,12 +65,15 @@ public class ModItemListRoute implements RouteHandler {
         {
             if (!item.getOwningMod().equals(mod_id)) continue;
 
+            JsonObject item_data = new JsonObject();
+            item_data.add("name", new JsonPrimitive(item.getLocalizedName()));
+
             if (item.getUnlocalizedName().endsWith(":"+ OreDictionary.WILDCARD_VALUE))
-                continue;
+                item_data.add("hidden", new JsonPrimitive(true));
 
             item_list_object.add(
                     item.getUnlocalizedName(),
-                    new JsonPrimitive(item.getLocalizedName())
+                    item_data
             );
         }
 

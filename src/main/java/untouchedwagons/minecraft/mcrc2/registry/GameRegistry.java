@@ -4,6 +4,7 @@ import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -60,6 +61,7 @@ public class GameRegistry {
 
         for (ModContainer mod : Loader.instance().getActiveModList())
         {
+            System.out.println(mod.getModId());
             this.mod_item_counts.put(mod.getModId(), 0);
             this.mod_names.put(mod.getModId(), mod.getName());
         }
@@ -82,6 +84,10 @@ public class GameRegistry {
             this.items.put(oredict_name, new MinecraftItem(oredict_name, first_item.getDisplayName(), "Forge"));
 
             this.oredict_reverse_lookup.put(oredict_items, oredict_name);
+
+            this.mod_item_counts.put(
+                    "Forge",
+                    this.mod_item_counts.get("Forge") + 1);
         }
     }
 
