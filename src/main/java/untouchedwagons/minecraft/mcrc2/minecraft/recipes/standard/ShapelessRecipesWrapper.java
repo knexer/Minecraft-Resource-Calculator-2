@@ -31,7 +31,9 @@ public class ShapelessRecipesWrapper extends RecipeWrapper
 
         for (ItemStack itemStack : items)
         {
-            if (itemStack == null) continue;
+            if (itemStack == null) {
+                continue;
+            }
 
             addIngredient(itemStack);
         }

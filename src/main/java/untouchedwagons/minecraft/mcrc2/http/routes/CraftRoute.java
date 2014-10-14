@@ -31,8 +31,9 @@ public class CraftRoute implements RouteHandler {
     public FullHttpResponse route(ChannelHandlerContext ctx, HttpMethod method, String uri, FullHttpRequest request) {
         Matcher matcher = CraftRoute.CraftRegex.matcher(uri);
 
-        if (!matcher.find())
+        if (!matcher.find()) {
             return new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST);
+        }
 
         String item_name = matcher.group(1);
         Integer item_amount = Integer.parseInt(matcher.group(2));

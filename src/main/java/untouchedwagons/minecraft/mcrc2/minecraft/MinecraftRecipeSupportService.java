@@ -39,21 +39,24 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
     }
 
     public RecipeWrapper next() {
-        if (!this.hasNext())
+        if (!this.hasNext()) {
             return null;
+        }
 
         IRecipe recipe = (IRecipe)this.recipes_iterator.next();
 
-        if (this.unknown_recipes.contains(recipe.getClass()))
+        if (this.unknown_recipes.contains(recipe.getClass())) {
             return null;
+        }
 
         Class<? extends RecipeWrapper> recipe_wrapper_class = this.wrapper_providers.get(recipe.getClass());
 
         if (recipe_wrapper_class == null) {
-            if (MinecraftResourceCalculatorMod.do_logging)
+            if (MinecraftResourceCalculatorMod.do_logging) {
                 MinecraftResourceCalculatorMod.error_logger.println(
                         String.format("Warning: could not process recipe of type %s", recipe.getClass())
                 );
+            }
 
             this.unknown_recipes.add(recipe.getClass());
             return null;
@@ -62,10 +65,11 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         Constructor wrapper_constructor = this.getConstructorForRecipeWrapper(recipe_wrapper_class);
 
         if (wrapper_constructor == null) {
-            if (MinecraftResourceCalculatorMod.do_logging)
+            if (MinecraftResourceCalculatorMod.do_logging) {
                 MinecraftResourceCalculatorMod.error_logger.println(
                         String.format("Warning: could not find appropriate constructor for RecipeWrapper subclass: %s", recipe_wrapper_class)
                 );
+            }
 
             return null;
         }
@@ -119,10 +123,13 @@ public class MinecraftRecipeSupportService implements Iterator<RecipeWrapper>, I
         {
             Class[] parameters = constructor.getParameterTypes();
 
-            if (parameters.length != 2) continue;
+            if (parameters.length != 2) {
+                continue;
+            }
 
-            if (parameters[0] != IRecipe.class &&
-                parameters[1] != Map.class) continue;
+            if (parameters[0] != IRecipe.class && parameters[1] != Map.class) {
+                continue;
+            }
 
             return constructor;
         }

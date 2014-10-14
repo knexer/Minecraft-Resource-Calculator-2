@@ -5,9 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
-/**
- * Created by Jordan on 8/5/2014.
- */
 public class FurnaceRecipe implements IRecipe {
     private ItemStack input, output;
 

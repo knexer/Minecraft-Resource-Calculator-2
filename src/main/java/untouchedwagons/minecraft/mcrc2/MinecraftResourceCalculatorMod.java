@@ -13,7 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Mod(modid = "mcrc2", name = "Minecraft Resource Calculator 2", version = "0.7.9")
+@Mod(modid = "mcrc2", name = "Minecraft Resource Calculator 2", version = "0.7.10")
 public class MinecraftResourceCalculatorMod
 {
     @SidedProxy(clientSide = "untouchedwagons.minecraft.mcrc2.proxy.ClientProxy", serverSide = "untouchedwagons.minecraft.mcrc2.proxy.CommonProxy")

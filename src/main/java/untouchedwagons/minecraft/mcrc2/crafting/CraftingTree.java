@@ -49,14 +49,17 @@ public class CraftingTree implements ICraftingTree {
 
         // If 5 seconds have passed since starting, we bail since we're probably stuck
         // in an infinite loop
-        if(System.currentTimeMillis() - this.start_time > 5000)
+        if(System.currentTimeMillis() - this.start_time > 5000) {
             throw new InfiniteRecursionException();
+        }
 
         MinecraftItem item_obj = this.registry.getItems().get(item);
         List<RecipeWrapper> recipes = item_obj.getRecipes();
 
         // No need to go any further if there's no recipes
-        if ((this.recipe_count = recipes.size()) == 0) return;
+        if ((this.recipe_count = recipes.size()) == 0) {
+            return;
+        }
 
         Integer recipe_pos = this.selected_recipes.get(this.result);
 
@@ -64,8 +67,9 @@ public class CraftingTree implements ICraftingTree {
         // changed the default recipe
         if (recipe_pos == null ||
             recipe_pos < 0 ||
-            recipe_pos >= this.recipe_count)
+            recipe_pos >= this.recipe_count) {
             recipe_pos = 0;
+        }
 
         this.recipe = recipes.get(recipe_pos);
 
@@ -90,8 +94,9 @@ public class CraftingTree implements ICraftingTree {
         Integer excess = (this.recipe.getResult().getAmount() * bundles) - amount;
 
         // If there'll be leftover we'll add it to the list
-        if (excess > 0)
+        if (excess > 0) {
             this.handleExcess(this.result, excess);
+        }
 
         // Take care of any by-products made by the recipe
         // For example, an empty bucket when making cake
@@ -99,8 +104,9 @@ public class CraftingTree implements ICraftingTree {
         {
             String by_product_name = this.item_id_lookup.get(by_product.getKey().getItem());
 
-            if (by_product.getKey().getHasSubtypes())
+            if (by_product.getKey().getHasSubtypes()) {
                 by_product_name += String.format(":%d", by_product.getKey().getItemDamage());
+            }
 
             this.handleExcess(by_product_name, by_product.getValue());
         }
@@ -117,13 +123,15 @@ public class CraftingTree implements ICraftingTree {
 
                 ingredient_name = this.registry.getItemIdReverseLookup().get(ingredient_is.getItem());
 
-                if (ingredient_is.getHasSubtypes())
+                if (ingredient_is.getHasSubtypes()) {
                     ingredient_name += String.format(":%d", ingredient_is.getItemDamage());
+                }
 
                 // If the ingredient is a by-product we'll only need the ingredient count for all the crafting
                 // steps since the ingredient can be reused
-                if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue())
+                if (this.recipe.getByProducts().get(ingredient.getKey()) == ingredient.getValue()) {
                     items_required = ingredient.getValue();
+                }
             }
             else if (ingredient.getKey() instanceof List)
             {
@@ -173,10 +181,11 @@ public class CraftingTree implements ICraftingTree {
             }
             else
             {
-                if (MinecraftResourceCalculatorMod.do_logging)
+                if (MinecraftResourceCalculatorMod.do_logging) {
                     MinecraftResourceCalculatorMod.error_logger.println(
                             String.format("Found unknown ingredient type. Expected: ItemStack, List or FluidStack, got: %s", ingredient.getKey().getClass())
                     );
+                }
 
                 continue;
             }
@@ -192,10 +201,11 @@ public class CraftingTree implements ICraftingTree {
     {
         Integer current_excess = this.excess_items.get(item);
 
-        if (current_excess == null)
+        if (current_excess == null) {
             this.excess_items.put(item, amount);
-        else
+        } else {
             this.excess_items.put(item, current_excess + amount);
+        }
     }
 
     public String getResult() {

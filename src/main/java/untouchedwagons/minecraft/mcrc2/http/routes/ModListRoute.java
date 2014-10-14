@@ -26,11 +26,13 @@ public class ModListRoute implements RouteHandler {
     @Override
     public FullHttpResponse route(ChannelHandlerContext ctx, HttpMethod method, String uri, FullHttpRequest request)
     {
-        if (!this.game_registry.isReady())
+        if (!this.game_registry.isReady()) {
             return new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE);
+        }
 
-        if (this.mod_list == null)
+        if (this.mod_list == null) {
             populateModList();
+        }
 
         ByteBuf content = ctx.alloc().buffer();
         content.writeBytes(this.mod_list.getBytes());
@@ -49,8 +51,9 @@ public class ModListRoute implements RouteHandler {
 
         for (Map.Entry<String, String> mod : this.game_registry.getModNames().entrySet())
         {
-            if (this.game_registry.getModItemCounts().get(mod.getKey()) == 0)
+            if (this.game_registry.getModItemCounts().get(mod.getKey()) == 0) {
                 continue;
+            }
 
             mod_list_object.add(mod.getKey(), new JsonPrimitive(mod.getValue()));
         }

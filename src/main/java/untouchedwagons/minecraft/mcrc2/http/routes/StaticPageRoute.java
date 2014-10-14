@@ -22,15 +22,17 @@ public class StaticPageRoute implements RouteHandler {
 
     @Override
     public FullHttpResponse route(ChannelHandlerContext ctx, HttpMethod method, String uri, FullHttpRequest request) {
-        if (uri.equals("/"))
+        if (uri.equals("/")) {
             uri = "/index.html";
+        }
 
         uri = "/assets/mcrc2/web" + uri;
 
         InputStream uri_file = this.getClass().getResourceAsStream(uri);
 
-        if (uri_file == null)
+        if (uri_file == null) {
             return new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
+        }
 
         byte[] buffer = new byte[4096];
         int bytes_read;

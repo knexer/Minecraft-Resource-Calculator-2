@@ -31,32 +31,40 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
     @Override
     public boolean shouldFilterRecipe(RecipeWrapper recipe)
     {
-        if (this.isBlockToIngotRecipe(recipe))
+        if (this.isBlockToIngotRecipe(recipe)) {
             return true;
+        }
 
-        if (this.isNuggetToIngotRecipe(recipe))
+        if (this.isNuggetToIngotRecipe(recipe)) {
             return true;
+        }
 
-        if (this.isSelfReplicatingRecipe(recipe))
+        if (this.isSelfReplicatingRecipe(recipe)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean isBlockToIngotRecipe(RecipeWrapper recipe)
     {
-        if (recipe.getIngredients().size() != 1) return false;
+        if (recipe.getIngredients().size() != 1) {
+            return false;
+        }
 
         // All this to get the first and only key in the map...
         Object ingredient = recipe.getIngredients().keySet().toArray()[0];
 
-        if (ingredient instanceof List) return false;
+        if (ingredient instanceof List) {
+            return false;
+        }
 
         ItemStack ingredient_stack = (ItemStack) ingredient;
         StackWrapper result_wrapper = recipe.getResult();
 
-        if (!(result_wrapper instanceof ItemStackWrapper))
+        if (!(result_wrapper instanceof ItemStackWrapper)) {
             return false;
+        }
 
         ItemStack result_stack = (ItemStack)result_wrapper.getUnderlyingStack();
 
@@ -66,18 +74,23 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
 
     public boolean isNuggetToIngotRecipe(RecipeWrapper recipe)
     {
-        if (recipe.getIngredients().size() != 1) return false;
+        if (recipe.getIngredients().size() != 1) {
+            return false;
+        }
 
         // All this to get the first and only key in the map...
         Object ingredient = recipe.getIngredients().keySet().toArray()[0];
 
-        if (ingredient instanceof List) return false;
+        if (ingredient instanceof List) {
+            return false;
+        }
 
         ItemStack ingredient_stack = (ItemStack) ingredient;
         StackWrapper result_wrapper = recipe.getResult();
 
-        if (!(result_wrapper instanceof ItemStackWrapper))
+        if (!(result_wrapper instanceof ItemStackWrapper)) {
             return false;
+        }
 
         ItemStack result_stack = (ItemStack)result_wrapper.getUnderlyingStack();
 
@@ -92,22 +105,25 @@ public class ConvenienceRecipeFilter extends RecipeFilter {
     {
         StackWrapper result = recipe.getResult();
 
-        if (!(result instanceof ItemStackWrapper))
+        if (!(result instanceof ItemStackWrapper)) {
             return false;
+        }
 
         ItemStack result_item = (ItemStack) result.getUnderlyingStack();
 
         for (Object ingredient : recipe.getIngredients().keySet())
         {
-            if (ingredient instanceof ItemStack && ((ItemStack)ingredient).isItemEqual(result_item))
+            if (ingredient instanceof ItemStack && ((ItemStack)ingredient).isItemEqual(result_item)) {
                 return true;
+            }
 
             if (ingredient instanceof List)
             {
                 for (Object ore_stack : ((List)ingredient))
                 {
-                    if (OreDictionary.itemMatches(result_item, (ItemStack) ore_stack, false))
+                    if (OreDictionary.itemMatches(result_item, (ItemStack) ore_stack, false)) {
                         return true;
+                    }
                 }
             }
         }

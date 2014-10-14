@@ -15,8 +15,9 @@ public class CustomizableHashMap<K, V> extends HashMap<K, V> {
     {
         for (K o : super.keySet())
         {
-            if (this.comparer.objectsAreEqual(o, key))
+            if (this.comparer.objectsAreEqual(o, key)) {
                 return true;
+            }
         }
 
         return false;
@@ -27,8 +28,9 @@ public class CustomizableHashMap<K, V> extends HashMap<K, V> {
     {
         for (K o : super.keySet())
         {
-            if (this.comparer.objectsAreEqual(o, key))
+            if (this.comparer.objectsAreEqual(o, key)) {
                 return super.get(o);
+            }
         }
 
         return null;
@@ -39,8 +41,9 @@ public class CustomizableHashMap<K, V> extends HashMap<K, V> {
     {
         for (K o : super.keySet())
         {
-            if (this.comparer.objectsAreEqual(o, key))
+            if (this.comparer.objectsAreEqual(o, key)) {
                 return super.put(o, value);
+            }
         }
 
         return super.put(key, value);

@@ -39,10 +39,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg)
     {
-        if (msg instanceof FullHttpRequest)
+        if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
-        else if (msg instanceof WebSocketFrame)
+        }
+        else if (msg instanceof WebSocketFrame) {
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
+        }
     }
 
     @Override
@@ -57,7 +59,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             return;
         }
 
-            sendHttpResponse(ctx, req, this.router.dispatch(ctx, req));
+        sendHttpResponse(ctx, req, this.router.dispatch(ctx, req));
     }
 
     private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {

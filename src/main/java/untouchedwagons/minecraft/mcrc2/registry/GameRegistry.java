@@ -111,10 +111,12 @@ public class GameRegistry {
 
             try {
                 // PotionItem's getSubItems method can't be trusted
-                if (item == Items.potionitem)
+                if (item == Items.potionitem) {
                     PotionHelper.getSubItems(items);
-                else
+                }
+                else {
                     item.getSubItems(item, null, items);
+                }
 
                 if (item.getHasSubtypes())
                 {
@@ -125,8 +127,9 @@ public class GameRegistry {
             {
                 // Extra Utilities' Microblocks are known to cause NullPointerExceptions. *Looks in RWTema's general direction*
                 // ChickenBones' Microblocks are known to cause NullPointerExceptions. *Looks in ChickenBones's general direction*
-                if (MinecraftResourceCalculatorMod.do_logging)
+                if (MinecraftResourceCalculatorMod.do_logging) {
                     npe.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
+                }
             }
         }
 
@@ -138,8 +141,9 @@ public class GameRegistry {
                 itemstack_id = this.item_id_reverse_lookup.get(is.getItem());
                 owning_mod = Utilities.getModId(is);
 
-                if (is.getHasSubtypes())
+                if (is.getHasSubtypes()) {
                     itemstack_id += String.format(":%d", is.getItemDamage());
+                }
 
                 if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     unlocalized_name = is.getUnlocalizedName() + ".wildcard.name";
@@ -169,8 +173,9 @@ public class GameRegistry {
             catch (Exception e)
             {
                 // Forestry's research notes are known to cause NPEs when getting the localized name. *Looks in Sengir's general direction*
-                if (MinecraftResourceCalculatorMod.do_logging)
+                if (MinecraftResourceCalculatorMod.do_logging) {
                     e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
+                }
             }
         }
     }
@@ -203,8 +208,9 @@ public class GameRegistry {
     {
         for (IModSupportService service : ServiceLoader.load(IModSupportService.class))
         {
-            if (!service.shouldActivateService())
+            if (!service.shouldActivateService()) {
                 continue;
+            }
 
             service.setItemIdReverseLookup(this.item_id_reverse_lookup);
             service.setRecipeWrapperRepository(this.wrapper_providers);
@@ -219,15 +225,18 @@ public class GameRegistry {
 
         for (RecipeFilter filter : ServiceLoader.load(RecipeFilter.class))
         {
-            if (!filter.shouldActivateFilter())
+            if (!filter.shouldActivateFilter()) {
                 continue;
+            }
 
             for (Class recipe_class : filter.getRecipeWrapperClasses())
             {
-                if (this.recipe_filters.containsKey(recipe_class))
+                if (this.recipe_filters.containsKey(recipe_class)) {
                     filter_list = this.recipe_filters.get(recipe_class);
-                else
+                }
+                else {
                     this.recipe_filters.put(recipe_class, filter_list = new ArrayList<RecipeFilter>());
+                }
 
                 filter_list.add(filter);
             }
@@ -245,8 +254,9 @@ public class GameRegistry {
             for (RecipeWrapper wrapped_recipe : support_service) {
                 try
                 {
-                    if (wrapped_recipe == null)
+                    if (wrapped_recipe == null) {
                         continue;
+                    }
 
                     wrapped_recipe.parse();
 
@@ -256,16 +266,18 @@ public class GameRegistry {
                     {
                         for (RecipeFilter filter : this.recipe_filters.get(wrapped_recipe.getClass()))
                         {
-                            if (filter_recipe = filter.shouldFilterRecipe(wrapped_recipe))
+                            if (filter_recipe = filter.shouldFilterRecipe(wrapped_recipe)) {
                                 break;
+                            }
                         }
                     }
 
                     if (filter_recipe) {
-                        if (MinecraftResourceCalculatorMod.do_logging)
+                        if (MinecraftResourceCalculatorMod.do_logging) {
                             MinecraftResourceCalculatorMod.error_logger.println(
                                     String.format("Filtered recipe with result of %s", wrapped_recipe.getResult().getLocalizedName())
                             );
+                        }
 
                         continue;
                     }
@@ -280,8 +292,9 @@ public class GameRegistry {
                 }
                 catch (Exception e)
                 {
-                    if (MinecraftResourceCalculatorMod.do_logging)
+                    if (MinecraftResourceCalculatorMod.do_logging) {
                         e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
+                    }
                 }
             }
         }

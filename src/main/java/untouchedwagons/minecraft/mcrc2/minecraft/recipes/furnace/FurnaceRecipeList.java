@@ -6,9 +6,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by Jordan on 8/5/2014.
- */
 public class FurnaceRecipeList extends ArrayList<FurnaceRecipe> {
     public FurnaceRecipeList(FurnaceRecipes furnaceRecipes)
     {

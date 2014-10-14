@@ -40,8 +40,9 @@ public class ClientProxy extends CommonProxy
         try {
             server.start();
         } catch (Exception e) {
-            if (MinecraftResourceCalculatorMod.do_logging)
+            if (MinecraftResourceCalculatorMod.do_logging) {
                 e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
+            }
         }
     }
 

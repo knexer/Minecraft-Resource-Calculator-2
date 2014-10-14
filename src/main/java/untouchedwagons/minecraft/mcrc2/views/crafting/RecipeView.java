@@ -12,11 +12,13 @@ public class RecipeView implements IView<RecipeWrapper> {
     {
         this.json_object.add("produces", new JsonPrimitive(recipe.getResult().getAmount()));
 
-        if (recipe.usesSpecialMachine())
+        if (recipe.usesSpecialMachine()) {
             this.json_object.add("machine", new JsonPrimitive(recipe.getMachine()));
+        }
 
-        if (recipe.hasExtraInformation())
+        if (recipe.hasExtraInformation()) {
             this.json_object.add("extra-information", new JsonPrimitive(recipe.getExtraInformation()));
+        }
     }
 
     public JsonObject getJsonObject()

@@ -38,8 +38,9 @@ public class MinecraftFurnaceSupportService implements Iterator<RecipeWrapper>, 
 
     @Override
     public boolean hasNext() {
-        if (this.furnace_iterator == null)
+        if (this.furnace_iterator == null) {
             this.furnace_iterator = new FurnaceRecipeList(FurnaceRecipes.smelting()).iterator();
+        }
 
         return this.furnace_iterator.hasNext();
     }

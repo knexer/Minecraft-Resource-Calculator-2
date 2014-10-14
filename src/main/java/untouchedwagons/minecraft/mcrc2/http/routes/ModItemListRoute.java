@@ -31,8 +31,9 @@ public class ModItemListRoute implements RouteHandler {
 
     @Override
     public FullHttpResponse route(ChannelHandlerContext ctx, HttpMethod method, String uri, FullHttpRequest request) {
-        if (!this.game_registry.isReady())
+        if (!this.game_registry.isReady()) {
             return new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE);
+        }
 
         Matcher matcher = mod_regex.matcher(uri);
 
@@ -41,8 +42,9 @@ public class ModItemListRoute implements RouteHandler {
 
         String mod_id = matcher.group(1);
 
-        if (!Loader.isModLoaded(mod_id) && !mod_id.equals("minecraft"))
+        if (!Loader.isModLoaded(mod_id) && !mod_id.equals("minecraft")) {
             return new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
+        }
 
         String item_list = this.getItemListForMod(mod_id);
 
@@ -63,13 +65,16 @@ public class ModItemListRoute implements RouteHandler {
 
         for (MinecraftItem item : this.game_registry.getItems().values())
         {
-            if (!item.getOwningMod().equals(mod_id)) continue;
+            if (!item.getOwningMod().equals(mod_id)) {
+                continue;
+            }
 
             JsonObject item_data = new JsonObject();
             item_data.add("name", new JsonPrimitive(item.getLocalizedName()));
 
-            if (item.getUnlocalizedName().endsWith(":"+ OreDictionary.WILDCARD_VALUE))
+            if (item.getUnlocalizedName().endsWith(":"+ OreDictionary.WILDCARD_VALUE)) {
                 item_data.add("hidden", new JsonPrimitive(true));
+            }
 
             item_list_object.add(
                     item.getUnlocalizedName(),

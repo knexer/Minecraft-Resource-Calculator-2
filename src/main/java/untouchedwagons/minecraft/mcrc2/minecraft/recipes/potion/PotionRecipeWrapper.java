@@ -20,8 +20,9 @@ public class PotionRecipeWrapper extends RecipeWrapper {
     public void parse() {
         PotionRecipe recipe = (PotionRecipe) this.getRecipe();
 
-        for (ItemStack input : recipe.inputs)
+        for (ItemStack input : recipe.inputs) {
             this.addIngredient(input);
+        }
     }
 
     @Override

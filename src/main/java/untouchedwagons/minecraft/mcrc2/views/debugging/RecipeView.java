@@ -25,11 +25,13 @@ public class RecipeView implements IView<RecipeWrapper>
     public void process(RecipeWrapper recipe) {
         this.json_object.add("produces", new JsonPrimitive(recipe.getResult().getAmount()));
 
-        if (recipe.hasExtraInformation())
+        if (recipe.hasExtraInformation()) {
             this.json_object.add("extra-information", new JsonPrimitive(recipe.getExtraInformation()));
+        }
 
-        if (recipe.usesSpecialMachine())
+        if (recipe.usesSpecialMachine()) {
             this.json_object.add("machine", new JsonPrimitive(recipe.getMachine()));
+        }
 
         JsonObject ingredients = new JsonObject();
 
@@ -41,8 +43,9 @@ public class RecipeView implements IView<RecipeWrapper>
 
                 String unlocalized_name = this.game_registry.getItemIdReverseLookup().get(ingredient_is.getItem());
 
-                if (ingredient_is.getHasSubtypes())
+                if (ingredient_is.getHasSubtypes()) {
                     unlocalized_name += String.format(":%d", ingredient_is.getItemDamage());
+                }
 
                 ingredients.add(unlocalized_name, new JsonPrimitive(ingredient.getValue()));
             }

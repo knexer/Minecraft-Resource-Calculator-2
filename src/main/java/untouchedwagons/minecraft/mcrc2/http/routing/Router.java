@@ -41,11 +41,13 @@ public class Router {
     {
         for (Route route : this.routes)
         {
-            if (route.getMethod() != request.getMethod())
+            if (route.getMethod() != request.getMethod()) {
                 continue;
+            }
 
-            if (!route.getPattern().matcher(request.getUri()).find())
+            if (!route.getPattern().matcher(request.getUri()).find()) {
                 continue;
+            }
 
             return route.getHandler().route(ctx, request.getMethod(), request.getUri(), request);
         }

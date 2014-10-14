@@ -28,8 +28,9 @@ public class DebugRoute implements RouteHandler {
 
     @Override
     public FullHttpResponse route(ChannelHandlerContext ctx, HttpMethod method, String uri, FullHttpRequest request) {
-        if (!this.game_registry.isReady())
+        if (!this.game_registry.isReady()) {
             return new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE);
+        }
 
         JsonObject items_object = new JsonObject();
 
