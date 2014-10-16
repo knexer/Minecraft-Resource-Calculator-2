@@ -13,7 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Mod(modid = "mcrc2", name = "Minecraft Resource Calculator 2", version = "0.7.10")
+@Mod(modid = "mcrc2", name = "Minecraft Resource Calculator 2", version = "0.7.11")
 public class MinecraftResourceCalculatorMod
 {
     @SidedProxy(clientSide = "untouchedwagons.minecraft.mcrc2.proxy.ClientProxy", serverSide = "untouchedwagons.minecraft.mcrc2.proxy.CommonProxy")
@@ -21,17 +21,19 @@ public class MinecraftResourceCalculatorMod
 
     public static boolean do_logging = false;
     public static PrintStream error_logger;
+    private Configuration config;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+        this.config = new Configuration(event.getSuggestedConfigurationFile());
 
-        config.load();
-        config.get("logging", "log-exceptions", false, "Any exceptions caught will be saved to mcrc2.log in the root of your minecraft instance.");
+        this.config.load();
+        this.config.get("logging", "log-exceptions", false, "Any exceptions caught will be saved to mcrc2.log in the root of your minecraft instance.");
+        this.config.get("http", "port", 4574, "Port that the web server listens on");
 
-        if (config.hasChanged()) config.save();
+        if (this.config.hasChanged()) this.config.save();
 
-        if (config.get("logging", "log-exceptions", false).getBoolean())
+        if (this.config.get("logging", "log-exceptions", false).getBoolean())
         {
             DateFormat date_format = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
             String file_name = String.format("mcrc2-%s.log", date_format.format(new Date()));
@@ -51,7 +53,7 @@ public class MinecraftResourceCalculatorMod
     public void postInit(FMLPostInitializationEvent event)
     {
         proxy.collectRecipes();
-        proxy.startWebServer();
+        proxy.startWebServer(this.config.get("http", "port", 4574).getInt());
     }
 
     private class ErrorLoggerCloser extends Thread

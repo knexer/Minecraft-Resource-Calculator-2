@@ -21,10 +21,10 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void startWebServer() {
+    public void startWebServer(int port) {
         System.out.println("Starting Web Server");
 
-        WebSocketServer server = new WebSocketServer();
+        WebSocketServer server = new WebSocketServer(port);
 
         server.getRouter().addRoute(HttpMethod.GET, "\\.png$", new StaticPageRoute("image/png"));
         server.getRouter().addRoute(HttpMethod.GET, "\\.css$", new StaticPageRoute("text/css"));

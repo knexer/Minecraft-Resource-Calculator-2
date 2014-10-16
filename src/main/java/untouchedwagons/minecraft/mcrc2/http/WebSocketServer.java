@@ -16,13 +16,14 @@ import io.netty.handler.logging.LoggingHandler;
 import untouchedwagons.minecraft.mcrc2.http.routing.Router;
 
 public final class WebSocketServer extends Thread {
-    static final int PORT = 8080;
-
+    private final int port;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private final Router router;
 
-    public WebSocketServer() {
+    public WebSocketServer(int port) {
+        this.port = port;
+
         this.bossGroup = new NioEventLoopGroup(1);
         this.workerGroup = new NioEventLoopGroup();
         this.router = new Router();
@@ -49,9 +50,9 @@ public final class WebSocketServer extends Thread {
                         }
                     });
 
-            Channel ch = b.bind(PORT).sync().channel();
+            Channel ch = b.bind(this.port).sync().channel();
 
-            FMLLog.info("Open your web browser and navigate to http://127.0.0.1:%d/", PORT);
+            FMLLog.info("Open your web browser and navigate to http://127.0.0.1:%d/", this.port);
 
             ch.closeFuture().sync();
         }
