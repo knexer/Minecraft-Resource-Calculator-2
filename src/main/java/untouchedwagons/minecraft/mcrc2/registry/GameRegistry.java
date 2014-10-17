@@ -169,9 +169,12 @@ public class GameRegistry {
                 this.mod_item_counts.put(
                         owning_mod,
                         this.mod_item_counts.get(owning_mod) + 1);
-            }
-            catch (Exception e)
-            {
+            } catch (AbstractMethodError ame) {
+                // MagicBee's fancy backpacks are known to cause AbstractMethodErrors when getting the localized name. *Looks in Arkandos' general direction*
+                if (MinecraftResourceCalculatorMod.do_logging) {
+                    ame.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
+                }
+            } catch (Exception e) {
                 // Forestry's research notes are known to cause NPEs when getting the localized name. *Looks in Sengir's general direction*
                 if (MinecraftResourceCalculatorMod.do_logging) {
                     e.printStackTrace(MinecraftResourceCalculatorMod.error_logger);
