@@ -32,6 +32,8 @@ public class GameRegistry {
     private final Map<String, String> mod_names;
 
     private final HashMap<List, String> oredict_reverse_lookup;
+    // maps items to the OreDictionary entries they satisfy
+    private final HashMap<String, List<String>> oredict_satisfied_entries;
     private final Map<Class, List<RecipeFilter>> recipe_filters;
     private final List<IModSupportService> support_services;
     private final Map<String, Integer> selected_recipes;
@@ -46,6 +48,7 @@ public class GameRegistry {
         this.mod_names = new HashMap<String, String>();
 
         this.oredict_reverse_lookup = new HashMap<List, String>();
+        this.oredict_satisfied_entries = new HashMap<String, List<String>>();
         this.recipe_filters = new HashMap<Class, List<RecipeFilter>>();
         this.selected_recipes = new HashMap<String, Integer>();
         this.support_services = new ArrayList<IModSupportService>();
@@ -92,6 +95,16 @@ public class GameRegistry {
             this.items.put(ore_id, new MinecraftItem(ore_id, display_name, "Forge"));
 
             this.oredict_reverse_lookup.put(oredict_items, ore_id);
+
+            for (ItemStack item : oredict_items)
+            {
+                String minecraft_unlocalized_name = item.getUnlocalizedName();
+                if(oredict_satisfied_entries.get(minecraft_unlocalized_name) == null)
+                {
+                    oredict_satisfied_entries.put(minecraft_unlocalized_name, new ArrayList<String>());
+                }
+                oredict_satisfied_entries.get(minecraft_unlocalized_name).add(ore_id);
+            };
 
             this.mod_item_counts.put(
                     "Forge",
@@ -292,6 +305,18 @@ public class GameRegistry {
                     this.items.get(unlocalized_name)
                         .getRecipes()
                         .add(wrapped_recipe);
+
+                    //add the recipe to each oredict entry satisfied by result
+                    String minecraft_unlocalized_name = ((ItemStack)result.getUnderlyingStack()).getUnlocalizedName();
+                    if(oredict_satisfied_entries.get(minecraft_unlocalized_name) != null)
+                    {
+                        for(String satisfied_entry : oredict_satisfied_entries.get(minecraft_unlocalized_name))
+                        {
+                            this.items.get(satisfied_entry)
+                                .getRecipes()
+                                .add(wrapped_recipe);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
